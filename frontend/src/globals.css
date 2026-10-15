@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Shared design tokens: use these names across every feature. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+
+  --radius: 0.75rem;
+  --background: #f5f8f5;
+  --foreground: #18372c;
+  --card: #ffffff;
+  --card-foreground: #18372c;
+  --popover: #ffffff;
+  --popover-foreground: #18372c;
+  --primary: #166534;
+  --primary-foreground: #ffffff;
+  --secondary: #dcfce7;
+  --secondary-foreground: #14532d;
+  --muted: #edf4ee;
+  --muted-foreground: #61756a;
+  --accent: #f59e0b;
+  --accent-foreground: #30210b;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --border: #d9e5db;
+  --input: #cbd8ce;
+  --ring: #3d8b57;
+  --chart-1: #166534;
+  --chart-2: #3d8b57;
+  --chart-3: #f59e0b;
+  --chart-4: #84cc16;
+  --chart-5: #577b62;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #18372c;
+  --sidebar-primary: #166534;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dcfce7;
+  --sidebar-accent-foreground: #14532d;
+  --sidebar-border: #d9e5db;
+  --sidebar-ring: #3d8b57;
+
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.dark {
+  --background: #101a14;
+  --foreground: #eef7ef;
+  --card: #17251b;
+  --card-foreground: #eef7ef;
+  --popover: #17251b;
+  --popover-foreground: #eef7ef;
+  --primary: #86c995;
+  --primary-foreground: #102116;
+  --secondary: #243d2b;
+  --secondary-foreground: #d9f2dd;
+  --muted: #24312a;
+  --muted-foreground: #a2b4a6;
+  --accent: #f6b94b;
+  --accent-foreground: #30210b;
+  --destructive: #f87171;
+  --destructive-foreground: #2a0e0e;
+  --border: #34483a;
+  --input: #405747;
+  --ring: #86c995;
+  --chart-1: #86c995;
+  --chart-2: #55a86c;
+  --chart-3: #f6b94b;
+  --chart-4: #b5d86a;
+  --chart-5: #a2c4aa;
+  --sidebar: #17251b;
+  --sidebar-foreground: #eef7ef;
+  --sidebar-primary: #86c995;
+  --sidebar-primary-foreground: #102116;
+  --sidebar-accent: #243d2b;
+  --sidebar-accent-foreground: #d9f2dd;
+  --sidebar-border: #34483a;
+  --sidebar-ring: #86c995;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; color: var(--foreground); background: var(--background); }
+button, input, select { font: inherit; }
+button, a, input, select { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; transition: background .18s, transform .18s, box-shadow .18s; }
+button:disabled { cursor: default; opacity: .65; }
+a { color: inherit; text-decoration: none; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+input:focus, select:focus { outline: 2px solid var(--ring); outline-offset: 2px; }
+svg { flex-shrink: 0; }
+h1, h2, h3, p { margin: 0; }
+html { scroll-behavior: smooth; }
+::selection { background: #c8eac5; }
+
+/* Field artwork keeps its illustrative palette; application UI uses these tokens. */
