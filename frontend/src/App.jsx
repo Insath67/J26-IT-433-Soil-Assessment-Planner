@@ -13,7 +13,7 @@ export default function App() {
  return <><a className="skip-link" href={pathname === '/crop-finder' ? '#main' : '#content'}>Skip to content</a><Navigation/><Routes>
   <Route path="/" element={<HomePage/>}/>
   <Route path="/soil-scan" element={<SoilScan/>}/>
-  <Route path="/soil-health" element={<SoilHealth/>}/>
+  <Route path="/soil-health/*" element={<SoilHealth/>}/>
   <Route path="/crop-finder" element={<div className="crop-module"><CropFinder/></div>}/>
   <Route path="/fertilizer-guide" element={<FertilizerGuide/>}/>
   <Route path="*" element={<main id="content" className="module-page"><h1>Page not found</h1><Link to="/">Return to home</Link></main>}/>
