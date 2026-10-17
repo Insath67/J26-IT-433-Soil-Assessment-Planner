@@ -8,3 +8,271 @@
 @media(max-width:700px){.site-header{height:auto;min-height:108px;align-items:flex-start;flex-direction:column;padding:15px 18px 8px;gap:13px}.site-brand{font-size:22px}.site-brand-icon{width:33px;height:35px}.site-brand-sub{font-size:6px;margin-top:6px}.site-nav{width:100%;gap:3px}.site-nav a{font-size:11px;padding:9px}.home-page{padding:23px 19px 0}.home-hero{grid-template-columns:1fr;gap:25px}.home-hero-copy{padding:8px 0}.home-hero h1{font-size:40px;letter-spacing:-1.5px}.home-hero-copy>p{font-size:14px}.home-visual{height:340px}.field-art{height:auto;position:absolute;top:-75px}.visual-label{top:17px;left:17px}.hero-footnote{margin-top:25px}.explore-section{margin-top:42px}.explore-heading{display:block}.explore-heading>p{margin-top:12px}.explore-heading h2{font-size:24px}.module-grid{gap:12px}.module-card{padding:19px 16px}.module-card h3{font-size:20px}.module-card-top{margin-bottom:22px}.module-description{font-size:11px}.module-eyebrow{font-size:6px}.research-note{padding:22px;align-items:flex-start}.research-note>span{display:none}.site-footer{flex-wrap:wrap;line-height:1.7}.module-welcome{padding:30px 23px}.module-welcome h1{font-size:34px}.module-welcome>p:not(.site-eyebrow){font-size:13px}.hero-actions{gap:17px}}
 @media(max-width:380px){.module-grid{grid-template-columns:1fr}.home-hero h1{font-size:35px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+/* Saru Bima bilingual branding */
+.site-brand {
+  flex-shrink: 0;
+}
+
+.brand-wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.site-brand .brand-si {
+  font-family: var(--font-sinhala);
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--primary);
+}
+
+.site-brand .brand-en {
+  font-family: 'Manrope', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 2.8px;
+  color: var(--muted-foreground);
+}
+
+.home-hero-copy .brand-tagline {
+  font-family: var(--font-sinhala);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.9;
+  letter-spacing: normal;
+  color: var(--primary);
+  margin: 0 0 18px;
+}
+
+@media (max-width: 700px) {
+  .site-brand .brand-si {
+    font-size: 23px;
+  }
+
+  .site-brand .brand-en {
+    font-size: 8px;
+    letter-spacing: 2.3px;
+  }
+
+  .home-hero-copy .brand-tagline {
+    font-size: 17px;
+  }
+}
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+
+.language-switcher select {
+  max-width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #cbded1;
+  border-radius: 10px;
+  background: #fff;
+  color: #163f2d;
+  font-family:
+    'Noto Sans Sinhala Variable',
+    'Noto Sans Tamil Variable',
+    sans-serif;
+  cursor: pointer;
+}
+
+.language-switcher select:focus-visible {
+  outline: 2px solid #217344;
+  outline-offset: 3px;
+}
+
+.hero-actions {
+  flex-wrap: wrap;
+}
+
+.module-card,
+.home-hero-copy,
+.explore-heading > div {
+  min-width: 0;
+}
+
+.module-card h3,
+.home-hero-copy h1 {
+  overflow-wrap: break-word;
+}
+/* Full-width video background for the first section */
+.home-hero.home-hero-background {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 680px;
+  overflow: hidden;
+  padding: clamp(40px, 7vw, 100px);
+  background: #edf4ed;
+}
+
+.hero-background-video {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: blur(4px);
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* Light overlay keeps the existing green text readable */
+.hero-background-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(245, 249, 244, 0.96) 0%,
+    rgba(245, 249, 244, 0.88) 45%,
+    rgba(245, 249, 244, 0.48) 100%
+  );
+  pointer-events: none;
+}
+
+.home-hero-background .home-hero-copy {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  min-width: 0;
+}
+
+.home-hero-background .home-hero-copy h1 {
+  max-width: 700px;
+}
+
+.home-hero-background .home-hero-copy > p {
+  max-width: 620px;
+}
+
+.home-hero-background .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .home-hero.home-hero-background {
+    min-height: auto;
+    padding: 48px 22px;
+  }
+
+  .hero-background-overlay {
+    background: rgba(245, 249, 244, 0.9);
+  }
+}
+.hero-video-toggle {
+  margin-top: 20px;
+  padding: 8px 14px;
+  border: 1px solid #aac5af;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #174c30;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.hero-video-toggle:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 3px;
+}
+/* Home page: fixed video behind the header and page content */
+body.saru-home-active {
+  background: #eaf1e7;
+  isolation: isolate;
+}
+
+body.saru-home-active #root {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+body.saru-home-active .home-page {
+  background: transparent;
+}
+
+/*
+ * Remove the hero's clipping and stacking context so the fixed
+ * background can cover the viewport, including behind the header.
+ */
+body.saru-home-active .home-hero.home-hero-background {
+  position: relative;
+  isolation: auto;
+  overflow: visible;
+  background: transparent;
+  transform: none;
+  filter: none;
+}
+
+body.saru-home-active .hero-background-video {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  object-fit: cover;
+  object-position: center;
+  filter: none;
+  transform: none;
+  pointer-events: none;
+}
+
+/* No blur on the open side; stronger light overlay behind text */
+body.saru-home-active .hero-background-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(245, 249, 244, 0.95) 0%,
+    rgba(245, 249, 244, 0.87) 35%,
+    rgba(245, 249, 244, 0.50) 58%,
+    rgba(245, 249, 244, 0.12) 100%
+  );
+}
+
+/* A transparent header lets the same video show underneath */
+body.saru-home-active .site-header {
+  position: relative;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+/* Keep lower sections readable over the video */
+body.saru-home-active .explore-section {
+  position: relative;
+  margin-top: 24px;
+  padding: clamp(24px, 4vw, 48px);
+  border-radius: 24px;
+  background: rgba(248, 251, 247, 0.94);
+}
+
+body.saru-home-active .research-note {
+  position: relative;
+  background: rgba(239, 247, 235, 0.96);
+}
+
+@media (max-width: 640px) {
+  body.saru-home-active .hero-background-overlay {
+    background: rgba(245, 249, 244, 0.84);
+  }
+}

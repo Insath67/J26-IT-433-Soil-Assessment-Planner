@@ -1,0 +1,145 @@
+.saru-footer {
+  position: relative;
+  width: 100%;
+  margin-top: 48px;
+  background: #123b2a;
+  color: #eef6ee;
+  border-top: 4px solid #e8a348;
+}
+
+.saru-footer-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 64px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 54px 32px 42px;
+}
+
+.saru-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.saru-footer-logo {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #285940;
+  color: #d0ebad;
+}
+
+.saru-footer-brand strong,
+.saru-footer-brand small {
+  display: block;
+  color: #fff;
+}
+
+.saru-footer-brand strong {
+  font-size: 28px;
+  line-height: 1.6;
+}
+
+.saru-footer-brand small {
+  margin-top: 2px;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+.saru-footer-about > p {
+  max-width: 610px;
+  margin: 22px 0 0;
+  color: #d0dfd4;
+  font-size: 14px;
+  line-height: 1.95;
+}
+
+.saru-footer-contact h2 {
+  margin: 0 0 24px;
+  color: #fff;
+  font-size: 21px;
+  line-height: 1.6;
+}
+
+.saru-contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.saru-contact-row > svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: #efb45f;
+}
+
+.saru-contact-row > div {
+  min-width: 0;
+}
+
+.saru-contact-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #b9d3c2;
+  font-size: 12px;
+}
+
+.saru-contact-row a {
+  display: block;
+  width: fit-content;
+  margin-top: 5px;
+  color: #fff;
+  line-height: 1.7;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.saru-contact-row a:hover {
+  color: #efb45f;
+  text-decoration: underline;
+}
+
+.saru-contact-pending {
+  color: #d0dfd4;
+  line-height: 1.8;
+}
+
+.saru-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 22px 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: #c5d8ca;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.saru-footer a:focus-visible {
+  outline: 3px solid #efb45f;
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+
+@media (max-width: 700px) {
+  .saru-footer-main {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    padding: 38px 22px;
+  }
+
+  .saru-footer-bottom {
+    flex-direction: column;
+    padding: 20px 22px;
+  }
+}
