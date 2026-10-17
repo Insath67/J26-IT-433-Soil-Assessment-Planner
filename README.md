@@ -3,12 +3,6 @@
 One React application, one FastAPI application, four member folders in each, and shared design tokens.
 The supplied crop dashboard is integrated at **Home → Crop Finder**. The other three routes are starter pages for the other members.
 
-## ඉක්මනින් run කරමු — Windows / VS Code
-
-1. ZIP එක **අලුත් folder එකකට Extract All** කරන්න. පරණ project එක backup එකක් විදිහට තබාගන්න.
-2. VS Code → File → Open Folder → extracted `Kegalle-Crop-Research` folder එක open කරන්න.
-3. Terminal → New Terminal. පහත commands එකින් එක run කරන්න. `PS C:\...>` කොටස type කරන්න එපා.
-4. Node.js 22.12+ සහ Python 3.12 අවශ්‍යයි. `node --version`, `py -3.12 --version` මගින් බලන්න.
 
 ### Terminal 1 — homepage / frontend
 
