@@ -12,3 +12,152 @@
 @media(max-width:850px){.crop-module .sidebar{min-height:0}}
 
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Allow translated labels to wrap without clipping. */
+.crop-module .nav-item,
+.crop-module .primary,
+.crop-module .secondary,
+.crop-module .text-button,
+.crop-module .connection {
+  white-space: normal;
+}
+
+.crop-module .nav-item,
+.crop-module .primary,
+.crop-module .secondary {
+  height: auto;
+  min-height: 44px;
+}
+
+.crop-module .nav-item svg,
+.crop-module .primary svg,
+.crop-module .secondary svg {
+  flex-shrink: 0;
+}
+
+.crop-module .context-row,
+.crop-module .score-meta,
+.crop-module .legend,
+.crop-module .dialog-actions,
+.crop-module .topbar {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.crop-module .crop-main > div,
+.crop-module .insight-title > div,
+.crop-module .metric {
+  min-width: 0;
+}
+
+.crop-module .crop-card h3,
+.crop-module .page-heading h1,
+.crop-module .insight-title h2 {
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.crop-module .factor-label {
+  gap: 12px;
+}
+
+.crop-module .factor-label > span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.crop-module .factor-label > strong {
+  flex-shrink: 0;
+}
+
+.crop-module .mode-toggle label {
+  white-space: normal;
+  line-height: 1.6;
+}
+/* Keep the sidebar inside the Crop Finder section. */
+.crop-module .app-shell {
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 100vh;
+  height: auto;
+}
+
+/* Remove viewport-fixed positioning. */
+.crop-module .app-shell > .sidebar {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  overflow: visible;
+  box-sizing: border-box;
+  z-index: auto;
+}
+
+/* Remove the old space reserved for a fixed sidebar. */
+.crop-module .app-shell > .page-wrap {
+  width: auto;
+  min-width: 0;
+  margin-left: 0;
+}
+
+/* Keep the sidebar's bottom information inside normal flow. */
+.crop-module .sidebar .sidebar-bottom {
+  position: static;
+  inset: auto;
+}
+
+/* Stack the layout on smaller screens. */
+@media (max-width: 900px) {
+  .crop-module .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .crop-module .app-shell > .sidebar {
+    width: 100%;
+    border-right: 0;
+  }
+}
+.crop-module .crop-card-photo {
+  width: 100%;
+  height: 160px;
+  margin: 16px 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #e4eedf;
+}
+
+.crop-module .crop-card-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 200ms ease;
+}
+
+.crop-module .crop-card:hover .crop-card-photo img {
+  transform: scale(1.035);
+}
+
+.crop-module .crop-card-photo-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 48px;
+}
+
+html[data-theme='dark'] .crop-module .crop-card-photo {
+  background: #263e2b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crop-module .crop-card-photo img {
+    transition: none;
+  }
+
+  .crop-module .crop-card:hover .crop-card-photo img {
+    transform: none;
+  }
+}
