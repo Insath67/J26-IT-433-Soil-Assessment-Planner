@@ -1,0 +1,357 @@
+/* Shared theme colors */
+:root {
+  --sb-page: #f5f8f3;
+  --sb-surface: #ffffff;
+  --sb-soft: #edf5e9;
+  --sb-text: #173c2b;
+  --sb-muted: #596f61;
+  --sb-border: #d5e2d6;
+  --sb-primary: #176b3b;
+  --sb-on-primary: #ffffff;
+}
+
+html[data-theme='dark'] {
+  --sb-page: #0d1712;
+  --sb-surface: #15241b;
+  --sb-soft: #1d3023;
+  --sb-text: #edf6ec;
+  --sb-muted: #b2c6b5;
+  --sb-border: #354b3b;
+  --sb-primary: #a3da91;
+  --sb-on-primary: #102315;
+}
+
+/* Header controls */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--sb-border);
+  border-radius: 12px;
+  background: var(--sb-surface);
+  color: var(--sb-text);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: var(--sb-soft);
+}
+
+.theme-toggle:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 3px;
+}
+
+/* Page backgrounds */
+html[data-theme='dark'] body,
+html[data-theme='dark'] #root,
+html[data-theme='dark'] .home-page,
+html[data-theme='dark'] .module-page,
+html[data-theme='dark'] .crop-module .app-shell,
+html[data-theme='dark'] .crop-module .page-wrap,
+html[data-theme='dark'] .crop-module main {
+  background: var(--sb-page);
+  color: var(--sb-text);
+}
+
+/* Header, cards and dialogs */
+html[data-theme='dark'] :is(
+  .site-header,
+  .module-card,
+  .crop-preview-dialog,
+  .crop-preview-card,
+  .crop-preview-body
+),
+html[data-theme='dark'] .crop-module :is(
+  .sidebar,
+  .topbar,
+  .metric,
+  .crop-card,
+  .insight-panel,
+  .analysis-dialog,
+  .help-panel
+) {
+  background: var(--sb-surface);
+  color: var(--sb-text);
+  border-color: var(--sb-border);
+}
+
+/* Text colors */
+html[data-theme='dark'] :is(
+  .home-page,
+  .module-page,
+  .crop-module,
+  .crop-preview-dialog,
+  .site-header
+) :is(h1, h2, h3, h4, strong, label, legend) {
+  color: var(--sb-text);
+}
+
+html[data-theme='dark'] :is(
+  .home-page,
+  .module-page,
+  .crop-module,
+  .crop-preview-dialog
+) :is(p, small),
+html[data-theme='dark'] :is(
+  .metric-caption,
+  .context-muted,
+  .subtle,
+  .module-description,
+  .crop-preview-botanical,
+  .crop-preview-note
+) {
+  color: var(--sb-muted);
+}
+
+html[data-theme='dark'] .home-hero-copy h1 em,
+html[data-theme='dark'] .home-hero-copy .brand-tagline,
+html[data-theme='dark'] .site-brand .brand-si,
+html[data-theme='dark'] .crop-preview-score strong {
+  color: var(--sb-primary);
+}
+
+html[data-theme='dark'] .site-brand .brand-en,
+html[data-theme='dark'] .site-nav a,
+html[data-theme='dark'] .text-link,
+html[data-theme='dark'] .crop-module .brand {
+  color: var(--sb-text);
+}
+
+html[data-theme='dark'] .site-nav a.active {
+  background: var(--sb-soft);
+  color: var(--sb-primary);
+}
+
+/* Form controls */
+html[data-theme='dark'] .language-switcher select,
+html[data-theme='dark'] .crop-module :is(
+  input,
+  select,
+  textarea
+) {
+  background: var(--sb-page);
+  color: var(--sb-text);
+  border-color: var(--sb-border);
+}
+
+html[data-theme='dark'] .crop-module input::placeholder {
+  color: var(--sb-muted);
+}
+
+html[data-theme='dark'] .crop-module input {
+  accent-color: var(--sb-primary);
+}
+
+/* Soft panels */
+html[data-theme='dark'] :is(
+  .location-pill,
+  .research-note,
+  .module-symbol,
+  .leaf-stamp,
+  .crop-preview-score,
+  .crop-preview-media
+),
+html[data-theme='dark'] .crop-module :is(
+  .sidebar-note,
+  .nutrient-summary,
+  .sample-row,
+  .live-note,
+  .crop-icon,
+  .insight-icon,
+  .explain-pill,
+  .nav-item.current
+) {
+  background: var(--sb-soft);
+  color: var(--sb-text);
+  border-color: var(--sb-border);
+}
+
+/* Main buttons */
+html[data-theme='dark'] .site-button,
+html[data-theme='dark'] .crop-module .primary,
+html[data-theme='dark'] .crop-preview-reasons {
+  background: var(--sb-primary);
+  color: var(--sb-on-primary);
+  border-color: var(--sb-primary);
+}
+
+html[data-theme='dark'] .crop-module :is(
+  .secondary,
+  .icon-button
+),
+html[data-theme='dark'] .crop-preview-close {
+  background: var(--sb-soft);
+  color: var(--sb-text);
+  border-color: var(--sb-border);
+}
+
+html[data-theme='dark'] .crop-module :is(
+  .nav-item,
+  .text-button
+) {
+  color: var(--sb-text);
+}
+
+/* Preserve meaningful SHAP colors */
+html[data-theme='dark'] .crop-module .factor-label .positive {
+  color: #a3df9b;
+}
+
+html[data-theme='dark'] .crop-module .factor-label .negative {
+  color: #ffb087;
+}
+
+html[data-theme='dark'] .crop-module :is(
+  .progress-track,
+  .factor-axis
+) {
+  background: #354b3b;
+}
+
+html[data-theme='dark'] .crop-module .crop-card.selected {
+  border-color: var(--sb-primary);
+}
+
+html[data-theme='dark'] .crop-module .warnings {
+  background: #382b16;
+  color: #ffdf9c;
+  border-color: #80632a;
+}
+
+html[data-theme='dark'] .crop-module .form-error {
+  background: #3c2024;
+  color: #ffd4d4;
+  border-color: #87434b;
+}
+
+/* Home page video remains visible behind its content */
+html[data-theme='dark'] body.saru-home-active #root,
+html[data-theme='dark'] body.saru-home-active .home-page {
+  background: transparent;
+}
+
+html[data-theme='dark'] body.saru-home-active
+.home-hero.home-hero-background {
+  background: transparent;
+}
+
+html[data-theme='dark'] body.saru-home-active
+.hero-background-overlay {
+  background: linear-gradient(
+    90deg,
+    rgba(10, 23, 15, 0.97) 0%,
+    rgba(10, 23, 15, 0.90) 35%,
+    rgba(10, 23, 15, 0.62) 58%,
+    rgba(10, 23, 15, 0.25) 100%
+  );
+}
+
+html[data-theme='dark'] body.saru-home-active .site-header {
+  background: rgba(15, 30, 20, 0.88);
+  border-color: var(--sb-border);
+}
+
+html[data-theme='dark'] body.saru-home-active .explore-section,
+html[data-theme='dark'] body.saru-home-active .research-note {
+  background: rgba(21, 36, 27, 0.96);
+  color: var(--sb-text);
+}
+
+/* Footer already uses a dark palette in both themes. */
+html[data-theme='dark'] .saru-footer {
+  background: #09170f;
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .header-controls {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  html[data-theme='dark'] body.saru-home-active
+  .hero-background-overlay {
+    background: rgba(10, 23, 15, 0.9);
+  }
+}
+/* Dark header on the homepage */
+html[data-theme='dark'] body.saru-home-active #root .site-header {
+  background: rgba(13, 27, 18, 0.94);
+  background-image: none;
+  border-bottom: 1px solid #354b3b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Navigation links */
+html[data-theme='dark'] body.saru-home-active #root .site-header .site-nav a {
+  color: #dcebdd;
+}
+
+html[data-theme='dark'] body.saru-home-active #root .site-header .site-nav a.active {
+  background: #294732;
+  color: #b7eea5;
+}
+
+/* Logo text */
+html[data-theme='dark'] body.saru-home-active #root .site-header .brand-si {
+  color: #a3da91;
+}
+
+html[data-theme='dark'] body.saru-home-active #root .site-header .brand-en {
+  color: #cfdfd0;
+}
+
+/* Language selector and theme button */
+html[data-theme='dark'] body.saru-home-active #root .site-header .language-switcher {
+  color: #edf6ec;
+}
+
+html[data-theme='dark'] body.saru-home-active #root .site-header .language-switcher select,
+html[data-theme='dark'] body.saru-home-active #root .site-header .theme-toggle {
+  background: #1d3023;
+  color: #edf6ec;
+  border-color: #48624e;
+}
+/* Clear crop names in dark mode, including disabled empty cards */
+html[data-theme='dark'] #root .crop-module .crop-card h3 {
+  color: #f0f8ed;
+  opacity: 1;
+  -webkit-text-fill-color: #f0f8ed;
+}
+
+html[data-theme='dark'] #root .crop-module .crop-card.featured h3 {
+  color: #c4f2b3;
+  -webkit-text-fill-color: #c4f2b3;
+}
+
+html[data-theme='dark'] #root .crop-module .crop-card:disabled {
+  opacity: 1;
+}
+
+html[data-theme='dark'] #root .crop-module .crop-card .crop-score {
+  color: #b9eca5;
+}
+
+html[data-theme='dark'] #root .crop-module .crop-card .score-meta,
+html[data-theme='dark'] #root .crop-module .crop-card .match-tag {
+  color: #c6ddc7;
+}
