@@ -630,6 +630,7 @@ export function saveSample(formData) {
     samplingDepth: formData.samplingDepth || "0 - 15 cm (Topsoil)",
     date: formattedDate,
     time: formattedTime,
+    mlPrediction: formData.mlPrediction || null,
     ...analysis
   };
 

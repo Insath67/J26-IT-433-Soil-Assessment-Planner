@@ -55,7 +55,16 @@ function AnalysisResult() {
     }
   ];
 
-  const crops = sample.crops || [
+  const mlPrediction = sample.mlPrediction?.crop_prediction;
+  const displayedMlConfidence = mlPrediction
+    ? Math.min(98, Number(mlPrediction.confidence))
+    : null;
+  const crops = mlPrediction?.crop_rankings?.map((crop, index) => ({
+    name: crop.crop,
+    botanical: "Trained crop classifier result",
+    suitability: Math.min(98, Number(crop.score)),
+    tag: index === 0 ? "Recommended by model" : "Model ranking",
+  })) || sample.crops || [
     { name: "Ceylon Tea", botanical: "Camellia sinensis", suitability: 94, tag: "Highly Suitable" },
     { name: "Ceylon Cinnamon", botanical: "Cinnamomum verum", suitability: 89, tag: "Highly Suitable" },
     { name: "Black Pepper", botanical: "Piper nigrum", suitability: 85, tag: "Suitable" }
@@ -234,6 +243,28 @@ function AnalysisResult() {
           </div>
         </div>
       </div>
+
+      {mlPrediction && (
+        <section className="dashboard-section" style={{ marginBottom: "28px" }}>
+          <div className="section-header">
+            <div>
+              <h2 className="section-title">Trained Model Recommendation</h2>
+              <p className="section-desc">
+                Random Forest prediction from the submitted IoT soil and weather readings.
+              </p>
+            </div>
+            <span className="specimen-status-chip">
+              {displayedMlConfidence}% confidence
+            </span>
+          </div>
+          <div className="sample-card-glass" style={{ padding: "18px 22px" }}>
+            <strong>{mlPrediction.recommended_crop}</strong>
+            <span style={{ marginLeft: "10px", color: "var(--text-muted)" }}>
+              highest model probability
+            </span>
+          </div>
+        </section>
+      )}
 
       {/* Crop Recommendations Section */}
       <section className="dashboard-section" style={{ marginBottom: "28px" }}>

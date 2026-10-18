@@ -11,6 +11,8 @@ class SensorData(BaseModel):
     moisture: float = Field(default=63.0, ge=0, le=100, description="Volumetric moisture content (%)")
     temperature: float = Field(default=27.5, description="Soil temperature in degrees Celsius")
     ec: float = Field(default=1.4, description="Electrical Conductivity in mS/cm")
+    humidity: float = Field(default=78.0, ge=0, le=100, description="Air humidity (%)")
+    rainfall: float = Field(default=2200.0, ge=0, description="Rainfall for the training period (mm)")
 
 
 class SoilSample(BaseModel):

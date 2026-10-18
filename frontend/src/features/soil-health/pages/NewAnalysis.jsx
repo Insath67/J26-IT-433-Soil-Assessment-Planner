@@ -13,12 +13,26 @@ import {
   History as HistoryIcon
 } from "lucide-react";
 import { saveSample } from "../services/soilStorage";
+import { predictSoilHealth } from "../services/soilHealthML";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const NUMERIC_FIELDS = new Set([
+  "ph",
+  "nitrogen",
+  "phosphorus",
+  "potassium",
+  "temperature",
+  "humidity",
+  "rainfall",
+]);
 
 function NewAnalysis() {
   const navigate = useNavigate();
   const [method, setMethod] = useState("iot");
   const [saveSuccess, setSaveSuccess] = useState(null);
   const [fetchingTelemetry, setFetchingTelemetry] = useState(false);
+  const [mlLoading, setMlLoading] = useState(false);
+  const [mlError, setMlError] = useState("");
 
   const [formData, setFormData] = useState({
     sampleId: "KG-002",
@@ -30,39 +44,56 @@ function NewAnalysis() {
     nitrogen: "45",
     phosphorus: "24",
     potassium: "58",
-    moisture: "65",
     temperature: "26.8",
     ec: "1.2",
+    humidity: "78",
+    rainfall: "2200",
   });
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (
+      NUMERIC_FIELDS.has(name)
+      && !/^\d*(\.\d{0,2})?$/.test(value)
+    ) {
+      return;
+    }
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
-  // Simulates pulling fresh sensor telemetry from the calibrated ESP32 hardware node
-  const handleFetchESP32 = () => {
+  const handleFetchESP32 = async () => {
     setFetchingTelemetry(true);
-    setTimeout(() => {
+    setMlError("");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/soil-health/sensors/latest`);
+      if (!response.ok) {
+        throw new Error("The IoT node did not return sensor readings.");
+      }
+      const telemetry = await response.json();
       setFormData(prev => ({
         ...prev,
-        ph: (6.0 + Math.random() * 0.6).toFixed(1),
-        nitrogen: Math.floor(38 + Math.random() * 14).toString(),
-        phosphorus: Math.floor(22 + Math.random() * 12).toString(),
-        potassium: Math.floor(52 + Math.random() * 18).toString(),
-        moisture: Math.floor(60 + Math.random() * 12).toString(),
-        temperature: (25.5 + Math.random() * 2.5).toFixed(1),
-        ec: (1.1 + Math.random() * 0.4).toFixed(1),
+        ph: String(telemetry.ph),
+        nitrogen: String(telemetry.nitrogen),
+        phosphorus: String(telemetry.phosphorus),
+        potassium: String(telemetry.potassium),
+        temperature: String(telemetry.temperature),
+        ec: String(telemetry.ec),
+        humidity: String(telemetry.humidity),
+        rainfall: String(telemetry.rainfall),
       }));
       setFetchingTelemetry(false);
       setSaveSuccess({
         type: "info",
-        message: "Live telemetry ingested from calibrated ESP32 sensor mesh (Node #ESP32-KG01)."
+        message: "Live telemetry received from calibrated ESP32 sensor mesh (Node #ESP32-KG01)."
       });
       setTimeout(() => setSaveSuccess(null), 4000);
-    }, 600);
+    } catch (error) {
+      setFetchingTelemetry(false);
+      setMlError(error instanceof Error ? error.message : "Unable to read the IoT node.");
+    }
   };
 
   const handleSaveOnly = () => {
@@ -74,17 +105,49 @@ function NewAnalysis() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const saved = saveSample(formData);
-    setSaveSuccess({
-      type: "success",
-      message: `Soil sample "${saved.sampleId}" saved! Navigating to full assessment report...`,
-      sampleId: saved.sampleId
+    const invalidField = [...NUMERIC_FIELDS].find((field) => {
+      const value = formData[field];
+      const numericValue = Number(value);
+      return (
+        value === ""
+        || !Number.isFinite(numericValue)
+        || numericValue < 0
+        || (field === "ph" && numericValue > 14)
+        || (field === "humidity" && numericValue > 100)
+      );
     });
-    setTimeout(() => {
-      navigate(`/soil-health/result/${saved.sampleId}`);
-    }, 450);
+    if (invalidField) {
+      setMlError("Enter valid non-negative numeric values with up to two decimal places.");
+      return;
+    }
+    setMlLoading(true);
+    setMlError("");
+    try {
+      const prediction = await predictSoilHealth({
+        nitrogen: Number(formData.nitrogen),
+        phosphorus: Number(formData.phosphorus),
+        potassium: Number(formData.potassium),
+        temperature: Number(formData.temperature),
+        humidity: Number(formData.humidity),
+        ph: Number(formData.ph),
+        rainfall: Number(formData.rainfall),
+      });
+      const saved = saveSample({ ...formData, mlPrediction: prediction });
+      setSaveSuccess({
+        type: "success",
+        message: `Soil sample "${saved.sampleId}" saved with a ${Math.min(98, prediction.crop_prediction.confidence)}% ${prediction.crop_prediction.recommended_crop} model recommendation.`,
+        sampleId: saved.sampleId
+      });
+      setMlLoading(false);
+      setTimeout(() => {
+        navigate(`/soil-health/result/${saved.sampleId}`);
+      }, 450);
+    } catch (error) {
+      setMlLoading(false);
+      setMlError(error instanceof Error ? error.message : "AI assessment failed.");
+    }
   };
 
   return (
@@ -271,7 +334,7 @@ function NewAnalysis() {
               Physicochemical Sensor Parameters
             </h3>
             <p style={{ color: "var(--text-muted)", fontSize: "12.5px" }}>
-              NPK probe levels, pH balance, and moisture
+              NPK probe levels, pH balance, temperature, and climate inputs
             </p>
           </div>
 
@@ -279,8 +342,8 @@ function NewAnalysis() {
             <div className="form-group">
               <label className="form-label">Soil pH (0 - 14)</label>
               <input
-                type="number"
-                step="0.1"
+                type="text"
+                inputMode="decimal"
                 name="ph"
                 className="form-input"
                 value={formData.ph}
@@ -292,7 +355,8 @@ function NewAnalysis() {
             <div className="form-group">
               <label className="form-label">Nitrogen (N) - mg/kg</label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 name="nitrogen"
                 className="form-input"
                 value={formData.nitrogen}
@@ -304,7 +368,8 @@ function NewAnalysis() {
             <div className="form-group">
               <label className="form-label">Phosphorus (P) - mg/kg</label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 name="phosphorus"
                 className="form-input"
                 value={formData.phosphorus}
@@ -316,7 +381,8 @@ function NewAnalysis() {
             <div className="form-group">
               <label className="form-label">Potassium (K) - mg/kg</label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 name="potassium"
                 className="form-input"
                 value={formData.potassium}
@@ -326,22 +392,10 @@ function NewAnalysis() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Soil Moisture (%)</label>
-              <input
-                type="number"
-                name="moisture"
-                className="form-input"
-                value={formData.moisture}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
               <label className="form-label">Temperature (°C)</label>
               <input
-                type="number"
-                step="0.1"
+                type="text"
+                inputMode="decimal"
                 name="temperature"
                 className="form-input"
                 value={formData.temperature}
@@ -349,8 +403,19 @@ function NewAnalysis() {
                 required
               />
             </div>
+            <div className="form-group">
+              <label className="form-label">Air Humidity (%)</label>
+              <input type="text" inputMode="decimal" name="humidity"
+                className="form-input" value={formData.humidity} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Rainfall (mm)</label>
+              <input type="text" inputMode="decimal" name="rainfall"
+                className="form-input" value={formData.rainfall} onChange={handleChange} required />
+            </div>
           </div>
 
+          {mlError && <p role="alert" style={{ color: "#b91c1c", marginTop: 16 }}>{mlError}</p>}
           <div style={{ marginTop: "36px", display: "flex", justifyContent: "flex-end", gap: "12px", flexWrap: "wrap" }}>
             <button
               type="button"
@@ -370,10 +435,11 @@ function NewAnalysis() {
             </button>
             <button
               type="submit"
+              disabled={mlLoading}
               className="primary-btn"
             >
               <Sparkles size={16} />
-              <span>Save & Run AI Assessment</span>
+              <span>{mlLoading ? "Running trained model..." : "Save & Run AI Assessment"}</span>
               <ArrowRight size={16} />
             </button>
           </div>

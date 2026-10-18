@@ -136,6 +136,8 @@ DEFAULT_SAMPLES: Dict[str, SoilSample] = {
             moisture=63.0,
             temperature=27.5,
             ec=1.4,
+            humidity=78.0,
+            rainfall=2200.0,
         ),
         fertilityStatus="Medium",
         fertilityScore=74,
