@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -19,6 +19,8 @@ function AnalysisResult() {
   const { id } = useParams();
   const navigate = useNavigate();
   const sample = useMemo(() => getSampleById(id || "KG-001"), [id]);
+  const location = useLocation();
+  const prediction = location.state?.soilTypePrediction ?? null;
 
   const handleDownloadPdf = () => {
     downloadSoilReportPdf(sample);
@@ -154,6 +156,55 @@ function AnalysisResult() {
           </div>
         </div>
       </div>
+
+      {/* NEW: ML Soil Nutrient Prediction Results */}
+
+{prediction && (
+  <section
+    className="dashboard-section"
+    style={{ marginBottom: "28px" }}
+  >
+    <h2 className="section-title">
+      ML Soil Nutrient Estimation
+    </h2>
+
+    <p className="section-desc">
+      Selected Soil Type: {prediction.soil_type}
+    </p>
+
+    <div
+      className="form-grid"
+      style={{ marginTop: "20px" }}
+    >
+      {[
+        ["Nitrogen (N)", prediction.nitrogen, "mg/kg"],
+        ["Phosphorus (P)", prediction.phosphorus, "mg/kg"],
+        ["Potassium (K)", prediction.potassium, "mg/kg"],
+        ["Soil pH", prediction.ph, ""],
+      ].map(([label, value, unit]) => (
+        <div className="subpage-card" key={label}>
+          <h3>{label}</h3>
+          <h2>
+            {value} {unit}
+          </h2>
+          <p>Estimated from dataset</p>
+        </div>
+      ))}
+    </div>
+
+    {prediction.warning && (
+      <p
+        style={{
+          marginTop: "16px",
+          fontSize: "13px",
+          color: "#b45309",
+        }}
+      >
+        {prediction.warning}
+      </p>
+    )}
+  </section>
+)}
 
       {/* Fertility Hero Card */}
       <div className="fertility-hero-card" style={{ marginBottom: "28px" }}>
