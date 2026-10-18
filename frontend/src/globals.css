@@ -143,3 +143,64 @@ html { scroll-behavior: smooth; }
 ::selection { background: #c8eac5; }
 
 /* Field artwork keeps its illustrative palette; application UI uses these tokens. */
+:root {
+  --font-sinhala: 'Noto Sans Sinhala Variable', sans-serif;
+}
+
+:lang(si) {
+  font-family: var(--font-sinhala);
+  letter-spacing: normal;
+}
+:root {
+  --font-sinhala: 'Noto Sans Sinhala Variable', sans-serif;
+  --font-tamil: 'Noto Sans Tamil Variable', sans-serif;
+}
+
+/* Match the selected language, including elements with their own lang. */
+:lang(si) {
+  font-family: var(--font-sinhala);
+  letter-spacing: normal;
+}
+
+:lang(ta) {
+  font-family: var(--font-tamil);
+  letter-spacing: normal;
+}
+
+/* Override existing English heading/component font declarations. */
+html[lang='si'] body,
+html[lang='si'] #root :where(
+  h1, h2, h3, h4, p, a, button, input, select, textarea,
+  label, span, strong, em, b, small, li, th, td
+) {
+  font-family: var(--font-sinhala);
+  letter-spacing: normal;
+}
+
+html[lang='ta'] body,
+html[lang='ta'] #root :where(
+  h1, h2, h3, h4, p, a, button, input, select, textarea,
+  label, span, strong, em, b, small, li, th, td
+) {
+  font-family: var(--font-tamil);
+  letter-spacing: normal;
+}
+
+/* Preserve the Sinhala brand in every selected language. */
+#root .brand-si {
+  font-family: var(--font-sinhala);
+}
+
+#root .brand-en {
+  font-family: sans-serif;
+}
+
+/* The tagline follows the currently selected language. */
+#root .home-hero-copy .brand-tagline {
+  font-family: inherit;
+}
+
+html[lang='si'] .home-hero-copy h1,
+html[lang='ta'] .home-hero-copy h1 {
+  line-height: 1.5;
+}
