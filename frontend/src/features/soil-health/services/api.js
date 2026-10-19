@@ -1,14 +1,39 @@
-import axios from "axios";
-
 const API_BASE = import.meta.env.VITE_API_URL || `${(import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')}/soil-health`;
 
-const api = axios.create({
-  baseURL: API_BASE,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 15000,
-});
+async function request(path, options = {}) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+      signal: controller.signal,
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      const error = new Error(data.detail || "API request failed");
+      error.response = { data };
+      throw error;
+    }
+
+    return { data };
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+const api = {
+  get: path => request(path),
+  post: (path, data) => request(path, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }),
+};
 
 
 // Soil Samples

@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from typing import Dict, Any, List, Optional
 from app.features.soil_health.schemas import (
     SensorData,
@@ -240,19 +241,33 @@ def analyze_sample(sample_id: str) -> SoilAnalysisResult:
 
 
 def get_device_telemetry() -> DeviceStatus:
+    device_connected = os.getenv("ESP32_DEVICE_CONNECTED", "false").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    sensor_status = [
+        {"name": "7-in-1 NPK Soil Modbus Probe", "protocol": "RS-485 / Modbus RTU", "status": "Calibrated & Online", "health": "100%"},
+        {"name": "Glass pH Industrial Electrode", "protocol": "Analog ADC (GPIO 34)", "status": "Optimal Precision", "health": "98%"},
+        {"name": "Capacitive Soil Moisture Probe v2", "protocol": "Analog ADC (GPIO 35)", "status": "Active Reading", "health": "95%"},
+        {"name": "DS18B20 Waterproof Temp Probe", "protocol": "1-Wire Digital (GPIO 4)", "status": "Stable", "health": "99%"},
+    ]
+
+    if not device_connected:
+        sensor_status = [
+            {**sensor, "status": "Offline", "health": "0%"}
+            for sensor in sensor_status
+        ]
+
     return DeviceStatus(
         nodeId="ESP32-KG01",
         station="Kegalle Central Field Station (WL2a)",
         microcontroller="ESP32-WROOM-32",
-        status="online",
-        batteryLevel=92,
-        wifiSignal="-62 dBm",
-        activeSensors=7,
-        lastPing="Active",
-        sensors=[
-            {"name": "7-in-1 NPK Soil Modbus Probe", "protocol": "RS-485 / Modbus RTU", "status": "Calibrated & Online", "health": "100%"},
-            {"name": "Glass pH Industrial Electrode", "protocol": "Analog ADC (GPIO 34)", "status": "Optimal Precision", "health": "98%"},
-            {"name": "Capacitive Soil Moisture Probe v2", "protocol": "Analog ADC (GPIO 35)", "status": "Active Reading", "health": "95%"},
-            {"name": "DS18B20 Waterproof Temp Probe", "protocol": "1-Wire Digital (GPIO 4)", "status": "Stable", "health": "99%"},
-        ],
+        status="online" if device_connected else "offline",
+        batteryLevel=92 if device_connected else 0,
+        wifiSignal="-62 dBm" if device_connected else "Unavailable",
+        activeSensors=7 if device_connected else 0,
+        lastPing="Active" if device_connected else "No heartbeat",
+        sensors=sensor_status,
     )

@@ -11,25 +11,60 @@ import {
   Thermometer,
   Zap
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getDeviceStatus, getLatestSensorReadings } from "../services/api";
 
 function DeviceStatus() {
-  const [connected, setConnected] = useState(false);
-  const readings = [
-    { name: "Soil pH", value: "6.4", unit: "", icon: FlaskConical },
-    { name: "Nitrogen (N)", value: "42", unit: "mg/kg", icon: FlaskConical },
-    { name: "Phosphorus (P)", value: "28", unit: "mg/kg", icon: FlaskConical },
-    { name: "Potassium (K)", value: "55", unit: "mg/kg", icon: FlaskConical },
-    { name: "Moisture", value: "63", unit: "%", icon: Droplets },
-    { name: "Temperature", value: "27.5", unit: "°C", icon: Thermometer },
-    { name: "Electrical Conductivity", value: "1.4", unit: "mS/cm", icon: Zap },
-  ];
-  const sensors = [
-    { name: "7-in-1 NPK Soil Modbus Probe", protocol: "RS-485 / Modbus RTU", status: "Calibrated & Online", health: "100%" },
-    { name: "Glass pH Industrial Electrode", protocol: "Analog ADC (GPIO 34)", status: "Optimal Precision", health: "98%" },
-    { name: "Capacitive Soil Moisture Probe v2", protocol: "Analog ADC (GPIO 35)", status: "Active Reading", health: "95%" },
-    { name: "DS18B20 Waterproof Temp Probe", protocol: "1-Wire Digital (GPIO 4)", status: "Stable", health: "99%" },
-  ];
+  const [device, setDevice] = useState(null);
+  const [sensorData, setSensorData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const connected = device?.status?.toLowerCase() === "online";
+
+  const loadDeviceData = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const deviceResponse = await getDeviceStatus();
+      setDevice(deviceResponse.data);
+
+      if (deviceResponse.data.status?.toLowerCase() !== "online") {
+        setSensorData(null);
+        return;
+      }
+
+      const sensorResponse = await getLatestSensorReadings();
+      setSensorData(sensorResponse.data);
+    } catch (requestError) {
+      setDevice(null);
+      setSensorData(null);
+      setError(requestError.response?.data?.detail || "The device could not be reached.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialLoad = window.setTimeout(() => {
+      void loadDeviceData();
+    }, 0);
+
+    return () => window.clearTimeout(initialLoad);
+  }, [loadDeviceData]);
+
+  const readings = sensorData
+    ? [
+        { name: "Soil pH", value: sensorData.ph, unit: "", icon: FlaskConical },
+        { name: "Nitrogen (N)", value: sensorData.nitrogen, unit: "mg/kg", icon: FlaskConical },
+        { name: "Phosphorus (P)", value: sensorData.phosphorus, unit: "mg/kg", icon: FlaskConical },
+        { name: "Potassium (K)", value: sensorData.potassium, unit: "mg/kg", icon: FlaskConical },
+        { name: "Moisture", value: sensorData.moisture, unit: "%", icon: Droplets },
+        { name: "Temperature", value: sensorData.temperature, unit: "°C", icon: Thermometer },
+        { name: "Electrical Conductivity", value: sensorData.ec, unit: "mS/cm", icon: Zap },
+      ]
+    : [];
+  const sensors = device?.sensors || [];
 
   return (
     <div className="subpage-container">
@@ -48,9 +83,9 @@ function DeviceStatus() {
           </p>
         </div>
 
-        <button className="primary-btn" onClick={() => setConnected(value => !value)}>
+        <button className="primary-btn" onClick={loadDeviceData} disabled={loading}>
           {connected ? <RefreshCw size={15} /> : <PlugZap size={15} />}
-          <span>{connected ? "Refresh Readings" : "Connect Device"}</span>
+          <span>{loading ? "Checking Device..." : "Refresh Readings"}</span>
         </button>
       </div>
 
@@ -61,15 +96,20 @@ function DeviceStatus() {
             <p className="section-desc">
               {connected
                 ? "The IoT device is connected and the latest sensor values are available."
-                : "Plug in the IoT device and connect it to view the latest soil readings."}
+                : "The IoT device is disconnected. Connect the ESP32 device to view soil readings."}
             </p>
           </div>
           <span className={`status-pill ${connected ? "status-sufficient" : "status-deficient"}`}>
             <span className="status-dot"></span>
-            {connected ? "Device Connected" : "Waiting for Device"}
+            {loading ? "Checking Device" : connected ? "Device Connected" : "Device Offline"}
           </span>
         </div>
-        {connected && (
+        {error && (
+          <p role="alert" style={{ color: "#b91c1c", marginBottom: "18px" }}>
+            {error}
+          </p>
+        )}
+        {connected && !loading && (
           <div className="sensor-grid">
             {readings.map(({ name, value, unit, icon: Icon }) => (
               <div className="subpage-card" key={name}>
@@ -93,7 +133,7 @@ function DeviceStatus() {
             <span className="meta-label">Microcontroller</span>
             <div className="meta-value-row">
               <Cpu size={16} className="text-dark-green" />
-              <strong className="meta-value">ESP32-WROOM-32</strong>
+              <strong className="meta-value">{device?.microcontroller || "ESP32-WROOM-32"}</strong>
             </div>
             <span className="meta-sub">Dual Core 240MHz</span>
           </div>
@@ -102,27 +142,27 @@ function DeviceStatus() {
             <span className="meta-label">Wireless Connectivity</span>
             <div className="meta-value-row">
               <Wifi size={16} className="text-light-green" />
-              <strong className="meta-value">WiFi 2.4GHz / LoRa</strong>
+              <strong className="meta-value">{connected ? "WiFi 2.4GHz / LoRa" : "Disconnected"}</strong>
             </div>
-            <span className="meta-sub">Signal: -58 dBm (Strong)</span>
+              <span className="meta-sub">{connected ? `Signal: ${device?.wifiSignal || "Unavailable"}` : "Signal unavailable"}</span>
           </div>
 
           <div className="sample-meta-cell">
             <span className="meta-label">Power & Solar Battery</span>
             <div className="meta-value-row">
               <Battery size={16} className="text-dark-green" />
-              <strong className="meta-value">3.7V Li-Ion • 94%</strong>
+              <strong className="meta-value">{connected ? `3.7V Li-Ion • ${device?.batteryLevel ?? "--"}%` : "Unavailable"}</strong>
             </div>
-            <span className="meta-sub">Solar Charging Active</span>
+            <span className="meta-sub">{connected ? "Solar Charging Active" : "Device offline"}</span>
           </div>
 
           <div className="sample-meta-cell">
             <span className="meta-label">Uptime & Heartbeat</span>
             <div className="meta-value-row">
               <Clock size={16} className="text-dark-green" />
-              <strong className="meta-value">14 Days, 6 Hours</strong>
+              <strong className="meta-value">{connected ? "14 Days, 6 Hours" : "Unavailable"}</strong>
             </div>
-            <span className="meta-sub">Packet Loss: 0.02%</span>
+            <span className="meta-sub">{connected ? `Last ping: ${device?.lastPing || "Active"}` : "No heartbeat received"}</span>
           </div>
         </div>
       </div>
@@ -160,17 +200,17 @@ function DeviceStatus() {
                   {sensor.protocol}
                 </td>
                 <td>
-                  <span className="status-pill status-sufficient">
+                  <span className={`status-pill ${connected ? "status-sufficient" : "status-deficient"}`}>
                     <CheckCircle2 size={13} />
-                    {sensor.status}
+                    {connected ? sensor.status : "Offline"}
                   </span>
                 </td>
                 <td>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", width: "160px" }}>
                     <div style={{ flex: 1, height: "6px", background: "var(--border-subtle)", borderRadius: "999px", overflow: "hidden" }}>
-                      <div style={{ width: sensor.health, height: "100%", background: "var(--green-light-500)", borderRadius: "999px" }}></div>
+                      <div style={{ width: connected ? sensor.health : "0%", height: "100%", background: "var(--green-light-500)", borderRadius: "999px" }}></div>
                     </div>
-                    <span style={{ fontSize: "12px", fontWeight: "700" }}>{sensor.health}</span>
+                    <span style={{ fontSize: "12px", fontWeight: "700" }}>{connected ? sensor.health : "0%"}</span>
                   </div>
                 </td>
               </tr>
