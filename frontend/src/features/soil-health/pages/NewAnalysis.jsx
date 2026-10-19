@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveSample } from "../services/soilStorage";
+import { assessFertility } from "../services/fertility";
 
 const SOIL_TYPES = [
   "Deep acidic well-drained loam or clay loam",
@@ -45,6 +46,7 @@ export default function NewAnalysis() {
       });
       const prediction = await res.json();
       if (!res.ok) throw new Error(typeof prediction.detail === "string" ? prediction.detail : "Prediction failed");
+      const fertility = assessFertility(prediction);
       const saved = saveSample({
         ...form,
         soilColor: form.soilType,
@@ -56,6 +58,8 @@ export default function NewAnalysis() {
         temperature: 27.5,
         ec: 1.4,
         nutrientEstimate: true,
+        fertility: fertility.level,
+        fertilityScore: fertility.score,
       });
       navigate(`/soil-health/result/${encodeURIComponent(saved.sampleId)}`, {
         state: { soilTypePrediction: prediction },

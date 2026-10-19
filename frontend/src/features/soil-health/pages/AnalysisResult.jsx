@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getSampleById, setActiveSample } from "../services/soilStorage";
 import { downloadSoilReportPdf, printSoilReport } from "../services/pdfGenerator";
+import { assessFertility } from "../services/fertility";
 
 function AnalysisResult() {
   const { id } = useParams();
@@ -20,6 +21,7 @@ function AnalysisResult() {
   const sample = useMemo(() => getSampleById(id || "KG-001"), [id]);
   const location = useLocation();
   const prediction = location.state?.soilTypePrediction ?? null;
+  const computedFertility = assessFertility(sample);
 
   const handleDownloadPdf = () => {
     downloadSoilReportPdf(sample);
@@ -268,6 +270,11 @@ function AnalysisResult() {
             <FileDown size={16} />
             <span>Download PDF Report</span>
           </button>
+        </div>
+        <div>
+          <h3>Soil Fertility Level</h3>
+          <h2>{sample.fertility || computedFertility.level}</h2>
+          <p>Fertility Score: {score}%</p>
         </div>
       </div>
     </div>
