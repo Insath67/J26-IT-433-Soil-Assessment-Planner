@@ -151,48 +151,7 @@ export function downloadSoilReportPdf(sample) {
     currentY -= 17;
   });
 
-  // 5. Fertilizer Prescription Box
-  currentY -= 10;
-  drawText("FERTILIZER PRESCRIPTION & SOIL AMENDMENTS", 35, currentY, 10, true, [15, 61, 32]);
-  drawLine(35, currentY - 7, 560, currentY - 7, 1);
-  currentY -= 18;
-
-  const ferts = sample.recommendations?.fertilizers || [
-    { name: "Eppawala Rock Phosphate (ERP)", dosage: "150 kg/ha basal dressing", notes: "Corrects available P deficiency" },
-    { name: "Standard MOP & Urea", dosage: "Maintain scheduled split dressing", notes: "Supports ongoing vegetative leaf flush" },
-  ];
-
-  ferts.forEach((f) => {
-    setFillColor(254, 252, 240);
-    setStrokeColor(254, 240, 138);
-    drawRect(35, currentY - 14, 525, 22, true, true);
-
-    drawText(`• ${f.name}`, 44, currentY - 5, 8.5, true, [146, 64, 14]);
-    drawText(`Dosage: ${f.dosage}`, 230, currentY - 5, 8, false, [15, 23, 42]);
-    drawText(`Note: ${f.notes}`, 380, currentY - 5, 7.5, false, [113, 63, 18]);
-    currentY -= 26;
-  });
-
-  // 6. ML Recommended Crops for this Zone
-  currentY -= 5;
-  drawText("AI RECOMMENDED CROPS FOR SRI LANKA AGRO-ZONE", 35, currentY, 10, true, [15, 61, 32]);
-  drawLine(35, currentY - 7, 560, currentY - 7, 1);
-  currentY -= 20;
-
-  const crops = sample.crops || [
-    { name: "Ceylon Tea", botanical: "Camellia sinensis", suitability: 94, notes: "Compatible with pH and soil profile" },
-    { name: "Ceylon Cinnamon", botanical: "Cinnamomum verum", suitability: 89, notes: "Thrives in well-drained RYP soils" },
-    { name: "Black Pepper", botanical: "Piper nigrum", suitability: 85, notes: "Requires P supplementation" },
-  ];
-
-  crops.forEach((c) => {
-    drawText(`* ${c.name} (${c.botanical})`, 44, currentY, 8.5, true, [15, 61, 32]);
-    drawText(`Suitability: ${c.suitability}%`, 250, currentY, 8.5, true, [22, 101, 52]);
-    drawText(c.notes, 335, currentY, 8, false, [95, 113, 102]);
-    currentY -= 15;
-  });
-
-  // 7. Footer & Certification Stamp Block
+  // Footer & Certification Stamp Block
   drawLine(35, 65, 560, 65, 0.8);
   drawText("SRI LANKA AGRI-TECH RESEARCH INITIATIVE • FACULTY OF COMPUTING / AGRICULTURE • SLIIT", 48, 52, 7.5, false, [95, 113, 102]);
   drawText("Notice: ML predictions are calibrated against Sri Lanka Department of Agriculture field guidelines.", 48, 41, 7, false, [140, 155, 145]);

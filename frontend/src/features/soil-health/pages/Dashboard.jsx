@@ -10,7 +10,6 @@ import {
   CalendarDays,
   Plus,
   Layers,
-  Award,
   CheckCircle,
   AlertCircle,
   ArrowRight,
@@ -54,38 +53,6 @@ function Dashboard() {
     downloadSoilReportPdf(soilData);
   };
 
-  // Crop recommendations from active sample
-  const crops = soilData.crops || [
-    {
-      name: "Ceylon Tea",
-      botanical: "Camellia sinensis",
-      suitability: 94,
-      tag: "Highly Suitable",
-      notes: "Optimal pH and moisture for vegetative flush in mid-country hills.",
-    },
-    {
-      name: "Ceylon Cinnamon",
-      botanical: "Cinnamomum verum",
-      suitability: 89,
-      tag: "Highly Suitable",
-      notes: "Well-suited for well-drained soil; thrives with potassium levels.",
-    },
-    {
-      name: "Black Pepper",
-      botanical: "Piper nigrum",
-      suitability: 85,
-      tag: "Suitable",
-      notes: "Phosphorus supplementation recommended to boost root establishment.",
-    },
-    {
-      name: "Rubber",
-      botanical: "Hevea brasiliensis",
-      suitability: 81,
-      tag: "Suitable",
-      notes: "Adapted to regional agro-climatic conditions and soil moisture.",
-    },
-  ];
-
   // Nutrient status helpers
   const nStatus = soilData.nutrientStatus?.nitrogen || (soilData.nitrogen < 30 ? "Deficient" : "Sufficient");
   const pStatus = soilData.nutrientStatus?.phosphorus || (soilData.phosphorus < 35 ? "Deficient" : "Sufficient");
@@ -106,7 +73,7 @@ function Dashboard() {
           </div>
           <h1 className="page-title">Soil Fertility Dashboard</h1>
           <p className="page-subtitle">
-            Real-time IoT sensor telemetry, image-processing soil assessment & AI crop recommendations for Sri Lanka.
+            Real-time IoT sensor telemetry, image-processing soil assessment and AI fertility classification for Sri Lanka.
           </p>
         </div>
 
@@ -340,7 +307,6 @@ function Dashboard() {
                 <th>Measured Reading</th>
                 <th>Ideal Benchmark Range</th>
                 <th>Assessment Status</th>
-                <th>Agronomist Recommendation</th>
               </tr>
             </thead>
             <tbody>
@@ -363,11 +329,6 @@ function Dashboard() {
                     {nStatus === "Deficient" ? <AlertCircle size={12} /> : <CheckCircle size={12} />}
                     {nStatus}
                   </span>
-                </td>
-                <td className="table-recommendation">
-                  {nStatus === "Deficient" 
-                    ? "Below target. Apply urea or organic compost top-dressing to replenish vegetative flush."
-                    : "Adequate for vegetative development. Maintain standard urea or organic compost top-dressing."}
                 </td>
               </tr>
 
@@ -393,11 +354,6 @@ function Dashboard() {
                     {pStatus}
                   </span>
                 </td>
-                <td className={`table-recommendation ${pStatus === "Deficient" ? "text-attention-desc" : ""}`}>
-                  {pStatus === "Deficient"
-                    ? "Below target. Apply Eppawala Rock Phosphate (ERP) or DAP at planting to strengthen root networks."
-                    : "Optimum reserve. Promotes healthy root architecture and fruit setting in Sri Lankan crops."}
-                </td>
               </tr>
 
               <tr>
@@ -419,11 +375,6 @@ function Dashboard() {
                     {kStatus === "Deficient" ? <AlertCircle size={12} /> : <CheckCircle size={12} />}
                     {kStatus}
                   </span>
-                </td>
-                <td className="table-recommendation">
-                  {kStatus === "Deficient"
-                    ? "Low potassium level. Supplement with Muriate of Potash (MOP) to boost stress tolerance."
-                    : "Favorable level. Supports drought resistance and cellular transport. Continue periodic MOP schedule."}
                 </td>
               </tr>
 
@@ -447,68 +398,9 @@ function Dashboard() {
                     {phStatus}
                   </span>
                 </td>
-                <td className="table-recommendation">
-                  {phStatus === "Acidic Alert"
-                    ? "Strongly acidic. Apply Agricultural Dolomite (500 kg/ha) to neutralize soil acidity and supply Mg."
-                    : "Slightly acidic to near neutral. Optimal for nutrient absorption in Sri Lankan Wet/Intermediate zones."}
-                </td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </section>
-
-      {/* Sri Lanka Crop Recommendations (ML Guidance) */}
-      <section className="dashboard-section">
-        <div className="section-header">
-          <div>
-            <div className="section-tag-row">
-              <span className="ai-pill">
-                <Award size={13} />
-                ML Recommendation Model
-              </span>
-            </div>
-            <h2 className="section-title">Top Crop Recommendations for this Soil Profile</h2>
-            <p className="section-desc">
-              Ranked predictions based on N-P-K concentrations, pH {soilData.ph}, {soilData.soilType || "RYP"} soil, and {soilData.location} climate.
-            </p>
-          </div>
-
-          <Link to={`/soil-health/result/${soilData.sampleId}`} className="view-more-link">
-            <span>Detailed Agro-Report</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-
-        <div className="crops-grid">
-          {crops.map((crop, idx) => (
-            <div key={idx} className="crop-card">
-              <div className="crop-card-top">
-                <div>
-                  <h4 className="crop-name">{crop.name}</h4>
-                  <span className="crop-botanical">{crop.botanical}</span>
-                </div>
-                <div className="crop-match-badge">
-                  <span className="crop-match-val">{crop.suitability}%</span>
-                  <span className="crop-match-sub">Match</span>
-                </div>
-              </div>
-
-              <div className="crop-bar-wrap">
-                <div 
-                  className="crop-bar-fill" 
-                  style={{ width: `${crop.suitability}%` }}
-                ></div>
-              </div>
-
-              <p className="crop-notes">{crop.notes}</p>
-
-              <div className="crop-footer">
-                <span className="crop-tag">{crop.tag}</span>
-                <span className="crop-zone-label">{soilData.location} Compatible</span>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 

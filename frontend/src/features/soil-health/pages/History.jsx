@@ -30,7 +30,7 @@ function History() {
       window.removeEventListener("soil_data_updated", refreshData);
       window.removeEventListener("storage", refreshData);
     };
-  }, []);
+  }, [refreshData]);
 
   const handleViewInDashboard = (sampleId) => {
     setActiveSample(sampleId);
@@ -53,8 +53,7 @@ function History() {
     return (
       (row.sampleId && row.sampleId.toLowerCase().includes(term)) ||
       (row.location && row.location.toLowerCase().includes(term)) ||
-      (row.district && row.district.toLowerCase().includes(term)) ||
-      (row.crop && row.crop.toLowerCase().includes(term))
+      (row.district && row.district.toLowerCase().includes(term))
     );
   });
 
@@ -71,7 +70,7 @@ function History() {
           </div>
           <h1 className="page-title">Soil Analysis History</h1>
           <p className="page-subtitle">
-            Archive of field sensor readings, physicochemical measurements, and corresponding ML crop advisories.
+            Archive of field sensor readings, physicochemical measurements, and fertility classifications.
           </p>
         </div>
 
@@ -91,7 +90,7 @@ function History() {
             type="text"
             className="form-input"
             style={{ paddingLeft: "40px" }}
-            placeholder="Search by Sample ID, District, or Crop..."
+            placeholder="Search by Sample ID or District..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -110,14 +109,13 @@ function History() {
               <th>Timestamp</th>
               <th>pH Value</th>
               <th>Fertility Rating</th>
-              <th>Recommended Crops</th>
               <th style={{ textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredData.length === 0 ? (
               <tr>
-                <td colSpan="7" style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)" }}>
+                <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)" }}>
                   No soil analysis records match your search criteria.
                 </td>
               </tr>
@@ -152,9 +150,6 @@ function History() {
                       <CheckCircle size={12} />
                       {row.fertility} ({row.fertilityScore || 74}%)
                     </span>
-                  </td>
-                  <td style={{ fontWeight: "600", color: "var(--green-dark-800)" }}>
-                    {row.crop || (row.crops ? row.crops.slice(0, 2).map(c => c.name).join(", ") : "Ceylon Tea, Cinnamon")}
                   </td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>

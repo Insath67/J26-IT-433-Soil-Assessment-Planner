@@ -954,7 +954,7 @@
 
 .fertility-main-content {
   display: grid;
-  grid-template-columns: 210px 1fr 280px;
+  grid-template-columns: 210px 1fr;
   gap: 36px;
   align-items: center;
 }

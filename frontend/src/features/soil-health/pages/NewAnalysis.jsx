@@ -52,6 +52,9 @@ export default function NewAnalysis() {
         phosphorus: prediction.phosphorus,
         potassium: prediction.potassium,
         ph: prediction.ph,
+        moisture: 63,
+        temperature: 27.5,
+        ec: 1.4,
         nutrientEstimate: true,
       });
       navigate(`/soil-health/result/${encodeURIComponent(saved.sampleId)}`, {

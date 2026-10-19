@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   CheckCircle2,
-  AlertTriangle,
   Layers,
   Sprout,
   MapPin,
@@ -42,36 +41,6 @@ function AnalysisResult() {
   const kPercent = Math.min(100, Math.round(((sample.potassium || 55) / 70) * 100));
 
   const pIsDeficient = (sample.phosphorus || 28) < 35;
-  const fertilizers = sample.recommendations?.fertilizers || [
-    {
-      name: "Eppawala Rock Phosphate (ERP)",
-      dosage: "150 kg/hectare basal dressing",
-      type: "warning",
-      notes: "Resolves available phosphorus deficiency."
-    },
-    {
-      name: "Standard MOP & Urea",
-      dosage: "Maintain recommended split applications",
-      type: "success",
-      notes: "NPK maintenance schedule."
-    }
-  ];
-
-  const mlPrediction = sample.mlPrediction?.crop_prediction;
-  const displayedMlConfidence = mlPrediction
-    ? Math.min(98, Number(mlPrediction.confidence))
-    : null;
-  const crops = mlPrediction?.crop_rankings?.map((crop, index) => ({
-    name: crop.crop,
-    botanical: "Trained crop classifier result",
-    suitability: Math.min(98, Number(crop.score)),
-    tag: index === 0 ? "Recommended by model" : "Model ranking",
-  })) || sample.crops || [
-    { name: "Ceylon Tea", botanical: "Camellia sinensis", suitability: 94, tag: "Highly Suitable" },
-    { name: "Ceylon Cinnamon", botanical: "Cinnamomum verum", suitability: 89, tag: "Highly Suitable" },
-    { name: "Black Pepper", botanical: "Piper nigrum", suitability: 85, tag: "Suitable" }
-  ];
-
   return (
     <div className="subpage-container">
       {/* Navigation breadcrumb */}
@@ -95,7 +64,7 @@ function AnalysisResult() {
             </span>
             <span className="agro-zone-tag">Sample: {sample.sampleId}</span>
           </div>
-          <h1 className="page-title">Soil Analysis & Crop Advisory Report</h1>
+          <h1 className="page-title">Soil Analysis Report</h1>
           <p className="page-subtitle">
             Multivariate assessment for sample #{sample.sampleId} based on image texture and electrochemical readings.
           </p>
@@ -238,11 +207,9 @@ function AnalysisResult() {
 
           {/* Details & Submetrics */}
           <div className="fertility-details">
-            <h3 className="fertility-heading">Agronomic Recommendation Summary</h3>
+            <h3 className="fertility-heading">Soil Fertility Classification</h3>
             <p className="fertility-description">
-              {sample.recommendations?.summary || 
-                `The chemical profile shows appropriate nitrogen reserves and pH suitable for acid-tolerant crops like tea and cinnamon. Applying Eppawala Rock Phosphate will resolve the ${sample.phosphorus} mg/kg phosphorus deficiency.`
-              }
+                This sample is classified as {sample.fertility || "Medium"} fertility from its N, P, K and pH measurements.
             </p>
             <div className="fertility-submetrics">
               <div className="submetric-item">
@@ -275,87 +242,8 @@ function AnalysisResult() {
             </div>
           </div>
 
-          {/* Fertilizer Prescription Box */}
-          <div className="fertility-action-box">
-            <h4 className="action-box-title">Fertilizer Prescription</h4>
-            {fertilizers.map((fert, idx) => (
-              <div key={idx} className="action-item">
-                {fert.type === "warning" ? (
-                  <AlertTriangle size={15} className="action-item-icon warning" />
-                ) : (
-                  <CheckCircle2 size={15} className="action-item-icon success" />
-                )}
-                <div>
-                  <strong>{fert.name}</strong>
-                  <p>{fert.dosage}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
-
-      {mlPrediction && (
-        <section className="dashboard-section" style={{ marginBottom: "28px" }}>
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">Trained Model Recommendation</h2>
-              <p className="section-desc">
-                Random Forest prediction from the submitted IoT soil and weather readings.
-              </p>
-            </div>
-            <span className="specimen-status-chip">
-              {displayedMlConfidence}% confidence
-            </span>
-          </div>
-          <div className="sample-card-glass" style={{ padding: "18px 22px" }}>
-            <strong>{mlPrediction.recommended_crop}</strong>
-            <span style={{ marginLeft: "10px", color: "var(--text-muted)" }}>
-              highest model probability
-            </span>
-          </div>
-        </section>
-      )}
-
-      {/* Crop Recommendations Section */}
-      <section className="dashboard-section" style={{ marginBottom: "28px" }}>
-        <div className="section-header">
-          <div>
-            <h2 className="section-title">Compatible High-Yield Crops</h2>
-            <p className="section-desc">
-              Recommended for {sample.location} based on physicochemical characteristics and Sri Lanka Agro-climatic data.
-            </p>
-          </div>
-        </div>
-
-        <div className="crops-grid">
-          {crops.map((crop, idx) => (
-            <div key={idx} className="crop-card">
-              <div className="crop-card-top">
-                <div>
-                  <h4 className="crop-name">{crop.name}</h4>
-                  <span className="crop-botanical">{crop.botanical}</span>
-                </div>
-                <div className="crop-match-badge">
-                  <span className="crop-match-val">{crop.suitability}%</span>
-                  <span className="crop-match-sub">Match</span>
-                </div>
-              </div>
-
-              <div className="crop-bar-wrap">
-                <div className="crop-bar-fill" style={{ width: `${crop.suitability}%` }}></div>
-              </div>
-
-              <p className="crop-notes">{crop.notes || "Matches regional soil pH and macronutrient availability."}</p>
-
-              <div className="crop-footer">
-                <span className="crop-tag">{crop.tag}</span>
-                <span className="crop-zone-label">Agro-Grade A</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Action footer */}
       <div className="dashboard-actions-panel">

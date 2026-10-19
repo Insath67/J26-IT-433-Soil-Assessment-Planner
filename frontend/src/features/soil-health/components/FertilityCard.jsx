@@ -1,4 +1,4 @@
-import { Sprout, CheckCircle2, AlertTriangle, Sparkles, TrendingUp } from "lucide-react";
+import { Sprout, Sparkles } from "lucide-react";
 
 function FertilityCard({ 
   status = "Medium", 
@@ -67,7 +67,7 @@ function FertilityCard({
           </h3>
 
           <p className="fertility-description">
-            Physical soil parameters and Nitrogen-Potassium ratios in this Kegalle sample are healthy and well-suited for perennial plantation crops. Supplementing phosphorus will optimize root development and overall nutrient bioavailability.
+            The fertility level is calculated from the soil pH and the measured nitrogen, phosphorus and potassium values.
           </p>
 
           {/* Sub-metric progress bars */}
@@ -104,29 +104,6 @@ function FertilityCard({
           </div>
         </div>
 
-        {/* Right: Quick Recommendations & Action items */}
-        <div className="fertility-action-box">
-          <h4 className="action-box-title">
-            <TrendingUp size={15} />
-            Agronomist Guidance
-          </h4>
-
-          <div className="action-item">
-            <AlertTriangle size={15} className="action-item-icon warning" />
-            <div>
-              <strong>Phosphorus Correction</strong>
-              <p>Apply Eppawala Rock Phosphate (ERP) @ 150 kg/ha.</p>
-            </div>
-          </div>
-
-          <div className="action-item">
-            <CheckCircle2 size={15} className="action-item-icon success" />
-            <div>
-              <strong>Organic Mulching</strong>
-              <p>Add 2-3 tons/ha bio-compost to preserve 63% moisture.</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

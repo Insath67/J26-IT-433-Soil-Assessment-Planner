@@ -4,10 +4,26 @@ import {
   Battery,
   CheckCircle2,
   RefreshCw,
-  Clock
+  Clock,
+  PlugZap,
+  FlaskConical,
+  Droplets,
+  Thermometer,
+  Zap
 } from "lucide-react";
+import { useState } from "react";
 
 function DeviceStatus() {
+  const [connected, setConnected] = useState(false);
+  const readings = [
+    { name: "Soil pH", value: "6.4", unit: "", icon: FlaskConical },
+    { name: "Nitrogen (N)", value: "42", unit: "mg/kg", icon: FlaskConical },
+    { name: "Phosphorus (P)", value: "28", unit: "mg/kg", icon: FlaskConical },
+    { name: "Potassium (K)", value: "55", unit: "mg/kg", icon: FlaskConical },
+    { name: "Moisture", value: "63", unit: "%", icon: Droplets },
+    { name: "Temperature", value: "27.5", unit: "°C", icon: Thermometer },
+    { name: "Electrical Conductivity", value: "1.4", unit: "mS/cm", icon: Zap },
+  ];
   const sensors = [
     { name: "7-in-1 NPK Soil Modbus Probe", protocol: "RS-485 / Modbus RTU", status: "Calibrated & Online", health: "100%" },
     { name: "Glass pH Industrial Electrode", protocol: "Analog ADC (GPIO 34)", status: "Optimal Precision", health: "98%" },
@@ -32,10 +48,42 @@ function DeviceStatus() {
           </p>
         </div>
 
-        <button className="primary-btn" onClick={() => window.location.reload()}>
-          <RefreshCw size={15} />
-          <span>Ping Device</span>
+        <button className="primary-btn" onClick={() => setConnected(value => !value)}>
+          {connected ? <RefreshCw size={15} /> : <PlugZap size={15} />}
+          <span>{connected ? "Refresh Readings" : "Connect Device"}</span>
         </button>
+      </div>
+
+      <div className="sample-card-glass" style={{ marginBottom: "24px" }}>
+        <div className="section-header" style={{ marginBottom: "18px" }}>
+          <div>
+            <h2 className="section-title">Live Sensor Readings</h2>
+            <p className="section-desc">
+              {connected
+                ? "The IoT device is connected and the latest sensor values are available."
+                : "Plug in the IoT device and connect it to view the latest soil readings."}
+            </p>
+          </div>
+          <span className={`status-pill ${connected ? "status-sufficient" : "status-deficient"}`}>
+            <span className="status-dot"></span>
+            {connected ? "Device Connected" : "Waiting for Device"}
+          </span>
+        </div>
+        {connected && (
+          <div className="sensor-grid">
+            {readings.map(({ name, value, unit, icon: Icon }) => (
+              <div className="subpage-card" key={name}>
+                <div className="meta-value-row">
+                  <Icon size={18} className="text-dark-green" />
+                  <strong className="meta-value">{name}</strong>
+                </div>
+                <div style={{ marginTop: "12px", fontSize: "28px", fontWeight: "800", color: "var(--green-dark-800)" }}>
+                  {value} <span style={{ fontSize: "14px", fontWeight: "600" }}>{unit}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Device Overview Banner */}
