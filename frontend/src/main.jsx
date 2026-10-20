@@ -8,4 +8,7 @@ import '@fontsource/manrope/latin-600.css'
 import '@fontsource/manrope/latin-700.css'
 import './globals.css'
 import App from './App'
+import './i18n'
+import '@fontsource-variable/noto-sans-sinhala'
+import '@fontsource-variable/noto-sans-tamil'
 createRoot(document.getElementById('root')).render(<StrictMode><BrowserRouter><App /></BrowserRouter></StrictMode>)

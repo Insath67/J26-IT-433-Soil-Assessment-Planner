@@ -1,0 +1,69 @@
+{
+  "language": "Language",
+  "nav": {
+    "home": "Home",
+    "soil-scan": "Soil Scan",
+    "soil-health": "Soil Health",
+    "crop-finder": "Crop Finder",
+    "fertilizer-guide": "Fertilizer Guide"
+  },
+  "home": {
+    "location": "ROOTED IN KEGALLE, SRI LANKA",
+    "heading": "Know your soil.",
+    "headingAccent": "Plan a better season.",
+    "tagline": "Rooted in Sri Lanka. Growing with knowledge.",
+    "intro": "From the soil beneath your feet to the crop you plant next. Explore one connected workspace for smarter agricultural decisions.",
+    "welcomeTitle": "A thriving tomorrow for your farmland.",
+    "welcomeBody": "Which crop suits your soil? When should you start planting? Understand your soil, weather and crop options in one place, and take your next step with confidence.",
+    "welcome": "Welcome to Saru Bima!",
+    "findCrop": "Find your crop",
+    "explore": "Explore the workspace",
+    "footnote": "Four research components.",
+    "footnoteStrong": "One shared vision for better farming.",
+    "videoLabel": "A view of farmland",
+    "videoFallback": "Your browser does not support video playback.",
+    "visualLabel": "Know your land.",
+    "visualStrong": "Discover what could grow.",
+    "visualCaption": "SOIL · CLIMATE · CROPS",
+    "eyebrow": "YOUR FIELD, FROM EVERY ANGLE",
+    "exploreTitle": "Where would you like to start?",
+    "exploreDescription": "Follow the journey from soil discovery to informed crop planning.",
+    "researchTitle": "Built for our region. Growing through research.",
+    "researchDescription": "This workspace brings four research components together. Crop Finder currently uses synthetic data; the other modules are ready for your team's implementation.",
+    "region": "KEGALLE",
+    "country": "SRI LANKA",
+    "footerProject": "Saru Bima / Image Processing & ML-based Soil Assessment and Crop Recommendation (Sri Lanka)",
+    "footerTagline": "Understand the soil. Shape the next season.",
+    "playVideo": "Play background video",
+    "pauseVideo": "Pause background video"
+  },
+  "modules": {
+    "soil-scan": {
+      "eyebrow": "DISCOVER YOUR SOIL",
+      "description": "Explore soil classification using soil images.",
+      "status": "In development"
+    },
+    "soil-health": {
+      "eyebrow": "UNDERSTAND SOIL HEALTH",
+      "description": "Explore soil fertility and nutrient assessment.",
+      "status": "In development"
+    },
+    "crop-finder": {
+      "eyebrow": "PLAN YOUR NEXT CROP",
+      "description": "Explore crop recommendations and the factors behind each result.",
+      "status": "Synthetic-data demo"
+    },
+    "fertilizer-guide": {
+      "eyebrow": "SUPPORT YOUR CROP",
+      "description": "Explore fertilizer guidance based on soil and crop needs.",
+      "status": "In development"
+    }
+  },
+  "common": {
+    "loading": "Loading…",
+    "submit": "Submit",
+    "reset": "Reset",
+    "close": "Close",
+    "error": "Something went wrong. Please try again."
+  }
+}
