@@ -4,34 +4,45 @@ import { saveSample } from "../services/soilStorage";
 import { assessFertility } from "../services/fertility";
 
 const SOIL_TYPES = [
-  "Deep acidic well-drained loam or clay loam",
-  "Deep fertile well-drained loam or clay loam",
-  "Deep well-drained loam or clay loam",
-  "Fertile well-drained loam or sandy loam",
-  "Organic-rich well-drained loam",
+  "Loamy soil",
+  "Red-yellow Podzolic (Ultisol)",
+  "Reddish brown latsolic",
 ];
 const ZONES = [
-  "Kegalle (Wet Zone Mid Country - WL2a)",
-  "Kandy (Mid-Country Wet Zone)",
-  "Kurunegala (Intermediate Zone)",
-  "Nuwara Eliya (Up-Country Wet Zone)",
-  "Galle (Low-Country Wet Zone)",
+  "Kegalle (Wet Zone Low Country - WL2a)",
+  "Kegalle (Wet Zone Low Country - WL2b)",
 ];
 const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 export default function NewAnalysis() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    sampleId: "KG-002", location: "Kegalle", district: ZONES[0],
+    sampleId: "0002", location: "Kegalle", district: ZONES[0],
     soilType: SOIL_TYPES[0],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const change = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const change = e => {
+    const { name, value } = e.target;
+    const nextValue = name === "sampleId"
+      ? value.replace(/\D/g, "").slice(0, 4)
+      : name === "location"
+        ? value.replace(/[^A-Za-z\s]/g, "")
+        : value;
+    setForm(prev => ({ ...prev, [name]: nextValue }));
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    if (!/^\d{1,4}$/.test(form.sampleId)) {
+      setError("Sample ID must contain 1 to 4 numbers.");
+      return;
+    }
+    if (!/^[A-Za-z]+(?:\s[A-Za-z]+)*$/.test(form.location.trim())) {
+      setError("Location / District may contain letters and spaces only.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/soil-health/soil-type/predict`, {
@@ -85,11 +96,11 @@ export default function NewAnalysis() {
           <div className="form-grid" style={{ marginTop: 20 }}>
             <div className="form-group">
               <label className="form-label" htmlFor="sampleId">Sample ID</label>
-              <input id="sampleId" className="form-input" name="sampleId" value={form.sampleId} onChange={change} required />
+              <input id="sampleId" className="form-input" name="sampleId" value={form.sampleId} onChange={change} inputMode="numeric" maxLength={4} pattern="[0-9]{1,4}" title="Use 1 to 4 numbers" required />
             </div>
             <div className="form-group">
               <label className="form-label" htmlFor="location">Location / District</label>
-              <input id="location" className="form-input" name="location" value={form.location} onChange={change} required />
+              <input id="location" className="form-input" name="location" value={form.location} onChange={change} pattern="[A-Za-z]+([ ][A-Za-z]+)*" title="Use letters and spaces only" required />
             </div>
             <div className="form-group">
               <label className="form-label" htmlFor="district">Agro-Ecological Sub-Zone</label>
