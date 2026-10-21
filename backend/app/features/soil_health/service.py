@@ -7,7 +7,7 @@ from app.features.soil_health.schemas import (
     SoilAnalysisResult,
     DeviceStatus,
 )
-
+from app.database import get_soil_collection
 
 def evaluate_nutrient_status(data: SensorData) -> Dict[str, str]:
     """Compare observed values against Sri Lanka Dept. of Agriculture benchmarks."""
@@ -153,47 +153,103 @@ DEFAULT_SAMPLES: Dict[str, SoilSample] = {
 }
 
 # In-memory storage for runtime
-soil_samples_db: Dict[str, SoilSample] = dict(DEFAULT_SAMPLES)
-
 
 def get_all_samples() -> List[SoilSample]:
-    return list(soil_samples_db.values())
+    collection = get_soil_collection()
+
+    documents = collection.find(
+        {},
+        {"_id": 0}
+    ).sort("timestamp", -1)
+
+    return [
+        SoilSample(**document)
+        for document in documents
+    ]
 
 
-def get_sample_by_id(sample_id: str) -> Optional[SoilSample]:
-    return soil_samples_db.get(sample_id)
+def get_sample_by_id(
+    sample_id: str
+) -> Optional[SoilSample]:
+
+    collection = get_soil_collection()
+
+    document = collection.find_one(
+        {"sampleId": sample_id},
+        {"_id": 0}
+    )
+
+    if document is None:
+        return None
+
+    return SoilSample(**document)
 
 
 def get_latest_sample() -> Optional[SoilSample]:
-    if not soil_samples_db:
+    collection = get_soil_collection()
+
+    document = collection.find_one(
+        {},
+        {"_id": 0},
+        sort=[("timestamp", -1)]
+    )
+
+    if document is None:
         return None
-    return list(soil_samples_db.values())[-1]
+
+    return SoilSample(**document)
 
 
 def save_sample(sample: SoilSample) -> SoilSample:
-    # Auto-calculate ratings if not present
-    nutrients = evaluate_nutrient_status(sample.sensorData)
-    score, rating = compute_fertility_index(sample.sensorData)
+    collection = get_soil_collection()
+
+    # Calculate nutrient status
+    nutrients = evaluate_nutrient_status(
+        sample.sensorData
+    )
+
+    # Calculate fertility score and level
+    score, rating = compute_fertility_index(
+        sample.sensorData
+    )
 
     sample.nutrientStatus = nutrients
     sample.fertilityScore = score
     sample.fertilityStatus = rating
-    if not sample.timestamp:
-        sample.timestamp = datetime.now()
-    if not sample.date:
-        sample.date = datetime.now().strftime("%d/%m/%Y")
-    if not sample.time:
-        sample.time = datetime.now().strftime("%I:%M %p")
 
-    soil_samples_db[sample.sampleId] = sample
+    now = datetime.now()
+
+    if not sample.timestamp:
+        sample.timestamp = now
+
+    if not sample.date:
+        sample.date = now.strftime("%d/%m/%Y")
+
+    if not sample.time:
+        sample.time = now.strftime("%I:%M %p")
+
+    # Convert Pydantic object into MongoDB document
+    document = sample.model_dump(mode="python")
+
+    # Save new sample or update existing sample
+    collection.update_one(
+        {"sampleId": sample.sampleId},
+        {"$set": document},
+        upsert=True
+    )
+
     return sample
 
 
 def analyze_sample(sample_id: str) -> SoilAnalysisResult:
     sample = get_sample_by_id(sample_id)
     if not sample:
-        # Fallback to default
-        sample = DEFAULT_SAMPLES["KG-001"]
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=404,
+            detail=f"Soil sample '{sample_id}' not found"
+        )
 
     nutrients = evaluate_nutrient_status(sample.sensorData)
     score, rating = compute_fertility_index(sample.sensorData)
