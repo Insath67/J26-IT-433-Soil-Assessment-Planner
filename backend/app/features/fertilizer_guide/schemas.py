@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
 from typing import Optional
+from pydantic import BaseModel, Field
+
 class RecommendationRequest(BaseModel):
     crop: str
     soil_type: str
@@ -11,7 +12,7 @@ class RecommendationRequest(BaseModel):
     temperature: float
     EC: float = Field(ge=0)
     growth_stage: str
-    plant_age_years: Optional[float] = None
+    plant_age_years: Optional[float] = Field(default=None, ge=0)
     soil_series: Optional[str] = None
     bark_type: Optional[str] = None
     fertilizer_for_lookup: Optional[str] = None
