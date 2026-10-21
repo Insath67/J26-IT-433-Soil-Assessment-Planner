@@ -1,0 +1,58 @@
+{
+  "rows": 6000,
+  "train_rows": 4800,
+  "test_rows": 1200,
+  "features": [
+    "crop",
+    "soil_type",
+    "N",
+    "P",
+    "K",
+    "pH",
+    "moisture",
+    "temperature",
+    "EC"
+  ],
+  "targets": {
+    "organic_fertilizer": {
+      "best": {
+        "model": "RandomForest",
+        "accuracy": 1.0,
+        "macro_f1": 1.0
+      },
+      "candidates": [
+        {
+          "model": "RandomForest",
+          "accuracy": 1.0,
+          "macro_f1": 1.0
+        },
+        {
+          "model": "ExtraTrees",
+          "accuracy": 1.0,
+          "macro_f1": 1.0
+        }
+      ],
+      "class_count": 4
+    },
+    "inorganic_fertilizer": {
+      "best": {
+        "model": "RandomForest",
+        "accuracy": 0.9792,
+        "macro_f1": 0.9763
+      },
+      "candidates": [
+        {
+          "model": "RandomForest",
+          "accuracy": 0.9792,
+          "macro_f1": 0.9763
+        },
+        {
+          "model": "ExtraTrees",
+          "accuracy": 0.9475,
+          "macro_f1": 0.948
+        }
+      ],
+      "class_count": 15
+    }
+  }
+}
