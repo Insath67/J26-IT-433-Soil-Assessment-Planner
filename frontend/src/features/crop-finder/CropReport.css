@@ -1,0 +1,143 @@
+/* Hidden during normal browsing */
+.crop-print-report {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+
+  html:has(body.saru-print-report),
+  body.saru-print-report {
+    background: #fff !important;
+    color: #172b20 !important;
+    color-scheme: light !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* The report is a portal directly under body. */
+  body.saru-print-report > :not(.crop-print-report) {
+    display: none !important;
+  }
+
+  body.saru-print-report > .crop-print-report {
+    display: block !important;
+    width: 100%;
+    color: #172b20;
+    background: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.65;
+  }
+
+  .crop-print-report[lang='si'] {
+    font-family: 'Noto Sans Sinhala Variable', sans-serif;
+  }
+
+  .crop-print-report[lang='ta'] {
+    font-family: 'Noto Sans Tamil Variable', sans-serif;
+  }
+
+  .crop-report-heading {
+    padding-bottom: 14px;
+    border-bottom: 3px solid #276b3f;
+  }
+
+  .crop-report-heading > strong {
+    display: block;
+    color: #276b3f;
+    font-family: 'Noto Sans Sinhala Variable', sans-serif;
+    font-size: 24pt;
+  }
+
+  .crop-report-heading > span {
+    font-family: Arial, sans-serif;
+    font-size: 9pt;
+    letter-spacing: 3px;
+  }
+
+  .crop-print-report h1 {
+    margin: 12px 0 4px;
+    font-size: 19pt;
+    line-height: 1.6;
+  }
+
+  .crop-print-report h2 {
+    margin: 22px 0 10px;
+    font-size: 13pt;
+    break-after: avoid;
+  }
+
+  .crop-report-meta {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 7px 16px;
+    margin: 18px 0;
+  }
+
+  .crop-report-meta dt {
+    font-weight: 700;
+  }
+
+  .crop-report-meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .crop-report-notice {
+    padding: 12px;
+    border: 1px solid #b6c9b7;
+    background: #f0f5ee;
+  }
+
+  .crop-print-report table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+
+  .crop-print-report thead {
+    display: table-header-group;
+  }
+
+  .crop-print-report th,
+  .crop-print-report td {
+    padding: 8px;
+    border: 1px solid #b8c9ba;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .crop-print-report th {
+    background: #edf3e9;
+    font-weight: 700;
+  }
+
+  .crop-print-report tr {
+    break-inside: avoid;
+  }
+
+  .crop-report-shap {
+    break-inside: avoid;
+  }
+
+  .crop-report-note {
+    font-size: 9pt;
+    color: #405346;
+  }
+
+  .crop-report-footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid #b8c9ba;
+    font-size: 9pt;
+  }
+
+  .crop-print-report {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

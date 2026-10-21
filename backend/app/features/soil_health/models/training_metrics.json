@@ -1,0 +1,103 @@
+{
+    "accuracy": 0.989,
+    "training_samples": 4000,
+    "testing_samples": 1000,
+    "features": [
+        "N",
+        "P",
+        "K",
+        "temperature",
+        "humidity",
+        "ph",
+        "rainfall"
+    ],
+    "classes": [
+        "Cocoa",
+        "Pepper",
+        "Rubber",
+        "Tea",
+        "Vanilla"
+    ],
+    "classification_report": {
+        "Cocoa": {
+            "precision": 0.9702970297029703,
+            "recall": 0.98,
+            "f1-score": 0.9751243781094527,
+            "support": 200.0
+        },
+        "Pepper": {
+            "precision": 0.9797979797979798,
+            "recall": 0.97,
+            "f1-score": 0.9748743718592965,
+            "support": 200.0
+        },
+        "Rubber": {
+            "precision": 0.9950248756218906,
+            "recall": 1.0,
+            "f1-score": 0.9975062344139651,
+            "support": 200.0
+        },
+        "Tea": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1-score": 1.0,
+            "support": 200.0
+        },
+        "Vanilla": {
+            "precision": 1.0,
+            "recall": 0.995,
+            "f1-score": 0.9974937343358395,
+            "support": 200.0
+        },
+        "accuracy": 0.989,
+        "macro avg": {
+            "precision": 0.9890239770245681,
+            "recall": 0.9890000000000001,
+            "f1-score": 0.9889997437437108,
+            "support": 1000.0
+        },
+        "weighted avg": {
+            "precision": 0.9890239770245681,
+            "recall": 0.989,
+            "f1-score": 0.9889997437437108,
+            "support": 1000.0
+        }
+    },
+    "confusion_matrix": [
+        [
+            196,
+            4,
+            0,
+            0,
+            0
+        ],
+        [
+            6,
+            194,
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            200,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            200,
+            0
+        ],
+        [
+            0,
+            0,
+            1,
+            0,
+            199
+        ]
+    ]
+}
