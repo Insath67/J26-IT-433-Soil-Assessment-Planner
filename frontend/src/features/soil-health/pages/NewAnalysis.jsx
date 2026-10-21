@@ -3,19 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { saveSample } from "../services/soilStorage";
 
 const SOIL_TYPES = [
-  "Deep acidic well-drained loam or clay loam",
-  "Deep fertile well-drained loam or clay loam",
-  "Deep well-drained loam or clay loam",
-  "Fertile well-drained loam or sandy loam",
-  "Organic-rich well-drained loam",
+  "Loamy soil",
+  "Red-yellow Podzolic (Ultisol)",
+  "Reddish brown latsolic",
 ];
 
 const ZONES = [
-  "Kegalle (Wet Zone Mid Country - WL2a)",
-  "Kandy (Mid-Country Wet Zone)",
-  "Kurunegala (Intermediate Zone)",
-  "Nuwara Eliya (Up-Country Wet Zone)",
-  "Galle (Low-Country Wet Zone)",
+  "Kegalle (Wet Zone Low Country - WL2a)",
+  "Kegalle (Wet Zone Low Country - WL2b)",
 ];
 
 // VITE_API_URL should be the server origin, e.g. http://127.0.0.1:8000
@@ -26,7 +21,7 @@ const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000")
 export default function NewAnalysis() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    sampleId: "KG-002",
+    sampleId: "0002",
     location: "Kegalle",
     district: ZONES[0],
     soilType: SOIL_TYPES[0],
@@ -35,12 +30,26 @@ export default function NewAnalysis() {
   const [error, setError] = useState("");
 
   const change = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    const nextValue = name === "sampleId"
+      ? value.replace(/\D/g, "").slice(0, 4)
+      : name === "location"
+        ? value.replace(/[^A-Za-z\s]/g, "")
+        : value;
+    setForm((prev) => ({ ...prev, [name]: nextValue }));
   };
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    if (!/^\d{1,4}$/.test(form.sampleId)) {
+      setError("Sample ID must contain 1 to 4 numbers.");
+      return;
+    }
+    if (!/^[A-Za-z]+(?:\s[A-Za-z]+)*$/.test(form.location.trim())) {
+      setError("Location / District may contain letters and spaces only.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -165,6 +174,10 @@ export default function NewAnalysis() {
                 name="sampleId"
                 value={form.sampleId}
                 onChange={change}
+                inputMode="numeric"
+                maxLength={4}
+                pattern="[0-9]{1,4}"
+                title="Use 1 to 4 numbers"
                 required
               />
             </div>
@@ -176,6 +189,8 @@ export default function NewAnalysis() {
                 name="location"
                 value={form.location}
                 onChange={change}
+                pattern="[A-Za-z]+([ ][A-Za-z]+)*"
+                title="Use letters and spaces only"
                 required
               />
             </div>
