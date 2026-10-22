@@ -1,0 +1,34 @@
+{
+  "organic": {
+    "Aged cow dung / cattle manure": "/images/fertilizers/cowdungManure.png",
+    "Compost": "/images/fertilizers/compost.jpg",
+    "Compost / aged cow manure / Gliricidia green mulch": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Compost / cow dung / poultry litter": "/images/fertilizers/cowdungManure.png",
+    "Compost / well-rotted cattle manure": "/images/fertilizers/cowdungManure.png",
+    "Compost / well-rotted cow manure / green mulch": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Composted animal manure (cattle or poultry)": "/images/fertilizers/cowdungManure.png",
+    "Cow dung compost": "/images/fertilizers/cowdungManure.png",
+    "Gliricidia green leaf mulch": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Gliricidia mulch / aged cow dung / cow dung compost": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Gliricidia sepium (Madara) leaves": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Gliricidia sepium leaves (Madara)": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Mature compost / well-rotted cattle manure": "/images/fertilizers/cowdungManure.png",
+    "Well-composted cattle manure": "/images/fertilizers/cowdungManure.png",
+    "Well-composted cattle or poultry manure": "/images/fertilizers/cowdungManure.png",
+    "Well-rotted compost / dry leaves": "/images/fertilizers/compost.jpg",
+    "Well-rotted compost / green mulch": "/images/fertilizers/gliricidiaBranchMulch.png",
+    "Well-rotted compost / organic mulch": "/images/fertilizers/compost.jpg"
+  },
+  "inorganic": {
+    "Cocoa NPKMg blend (Urea:Rock Phosphate:MOP:Kieserite 4:5:3.5:1)": "/images/fertilizers/cocoa fertilizer.png",
+    "Cocoa NPKMg blend (Urea:Rock Phosphate:MOP:Kieserite = 4:5:3.5:1)": "/images/fertilizers/cocoa fertilizer.png",
+    "DEA 4:5:3:1 N-P-K-Mg mix (subject to soil test)": "/images/fertilizers/DEA pepper mix.png",
+    "DEA 4:5:3:1 mix (P-containing; verify need)": "/images/fertilizers/DEA pepper mix.png",
+    "Eppawala Rock Phosphate (ERP)": "/images/fertilizers/eppawalaRockPhospate.png",
+    "Eppawala Rock Phosphate (ERP; 30% P2O5)": "/images/fertilizers/eppawalaRockPhospate.png",
+    "R/U 15:15:7 (Parambe-series candidate; confirm soil series)": "/images/fertilizers/rubberFertilizer.png",
+    "R/U 15:15:7 mixture": "/images/fertilizers/rubberFertilizer.png",
+    "Tea phosphate fertilizer (TRI guidance required)": "/images/fertilizers/Tea Phospate.png",
+    "TRI tea blend selection after soil test": "/images/fertilizers/Tea Phospate.png"
+  }
+}
