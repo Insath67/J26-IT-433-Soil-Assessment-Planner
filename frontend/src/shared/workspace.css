@@ -13,6 +13,371 @@
   flex-shrink: 0;
 }
 
+.soil-scan-welcome {
+  max-width: 840px;
+  margin-inline: auto;
+}
+
+.soil-scan-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.soil-scan-card,
+.soil-result-card {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--background);
+}
+
+.soil-scan-card-heading,
+.soil-result-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.soil-scan-card-heading > svg,
+.soil-result-header > svg {
+  flex: 0 0 auto;
+  color: var(--primary);
+}
+
+.soil-scan-card-heading h2,
+.soil-result-header h2 {
+  margin: 0 0 8px;
+  font-family: Manrope, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.4px;
+}
+
+.soil-scan-card-heading p {
+  margin: 0 0 20px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.soil-upload-area {
+  position: relative;
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1.5px dashed var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .2s, background .2s;
+}
+
+.soil-upload-area:hover,
+.soil-upload-area.is-drag-active {
+  border-color: var(--primary);
+  background: var(--secondary);
+}
+
+.soil-upload-area:focus-within {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.soil-upload-area input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.soil-upload-prompt {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 24px;
+}
+
+.soil-upload-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 5px;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.soil-upload-prompt strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.soil-upload-prompt > span:last-child {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.soil-upload-area.has-preview {
+  min-height: 260px;
+  max-height: 400px;
+  background: var(--muted);
+}
+
+.soil-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.soil-preview-overlay {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.soil-file-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.soil-file-name > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.soil-remove-file {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.soil-remove-file:hover {
+  background: var(--secondary);
+}
+
+.soil-analyze-button,
+.soil-reset-button {
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.soil-analyze-button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+  transform: none;
+  box-shadow: none;
+}
+
+.soil-error {
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--destructive) 35%, var(--border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--destructive) 8%, var(--card));
+  color: var(--destructive);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.soil-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.soil-spin {
+  animation: soil-scan-spin 1s linear infinite;
+}
+
+@keyframes soil-scan-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.soil-result-header {
+  align-items: center;
+}
+
+.soil-result-header .site-eyebrow {
+  margin-bottom: 7px;
+}
+
+.soil-result-header h2 {
+  margin-bottom: 0;
+}
+
+.soil-predicted-class {
+  margin: 20px 0;
+  color: var(--primary);
+  font-family: Manrope, sans-serif;
+  font-size: clamp(32px, 6vw, 44px);
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.soil-confidence {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.soil-confidence strong {
+  color: var(--foreground);
+  font-size: 14px;
+}
+
+.soil-probabilities {
+  display: grid;
+  gap: 17px;
+  margin-top: 24px;
+}
+
+.soil-probabilities h3 {
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.soil-probability {
+  display: grid;
+  gap: 8px;
+}
+
+.soil-probability-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.soil-probability-label > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--muted-foreground);
+}
+
+.soil-probability-label strong {
+  flex: 0 0 auto;
+  color: var(--foreground);
+}
+
+.soil-probability.is-predicted .soil-probability-label > span {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.soil-predicted-badge {
+  padding: 3px 7px;
+  border-radius: 20px;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.soil-progress {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--muted);
+}
+
+.soil-progress-value {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--muted-foreground);
+  transition: width .35s ease;
+}
+
+.soil-probability.is-predicted .soil-progress-value {
+  background: var(--primary);
+}
+
+.soil-result-note {
+  margin: 24px 0 0;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.soil-reset-button {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.soil-reset-button:hover {
+  background: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .soil-scan-welcome {
+    padding: 30px 22px;
+  }
+
+  .soil-scan-card,
+  .soil-result-card {
+    padding: 20px;
+  }
+
+  .soil-upload-area {
+    min-height: 190px;
+  }
+
+  .soil-upload-area.has-preview {
+    min-height: 210px;
+  }
+}
+
 .brand-wordmark {
   display: flex;
   flex-direction: column;
