@@ -1,11 +1,51 @@
-# Member 1 — Soil Scan backend
+# Soil Scan: image + IoT research prototype
 
-`router.py` already belongs to the main FastAPI app with the `/api/soil-scan` prefix. `GET /status` explicitly reports `not_implemented`.
+## Current behavior
 
-- `router.py`: HTTP endpoints; create functions on the existing APIRouter.
-- `service.py`: model/business logic.
-- `schemas.py`: agreed Pydantic request/response models.
+`POST /api/soil-scan/predict` remains the image-only EfficientNetB0 classifier.
+It resizes RGB input to 224 × 224 and returns Clay, Loam, or Sand with the
+image model's confidence and probabilities.
 
-Add member-owned `models/` and `data/` folders only when needed. Add dependencies to the shared backend requirements, then notify the team. Keep keys in backend/.env. Put regression tests in backend/tests and document the actual API contract here.
+`GET /api/soil-scan/sensor-data` currently returns clearly marked demo readings.
+`source` is `demo` and `connected` is `false`; these values do not represent an
+ESP32 or a live sensor.
 
-Replace the status and UI wording once real functionality is integrated. Cross-member data flow needs an agreed input contract, units and provenance; there is currently no automatic sensor or image-to-crop pipeline.
+`POST /api/soil-scan/predict-multimodal` accepts multipart fields `file`, `ec`
+(mS/cm), `moisture` (%), and `temperature` (°C). Its `image_prediction` is
+produced by the existing image classifier. The response separately echoes the
+validated sensor readings and sets `fusion.status` to `not_trained`. Sensor
+values are not used to alter the image prediction or its probabilities.
+
+Temperature bounds default to -10 °C through 80 °C and can be configured with
+`SOIL_SCAN_TEMPERATURE_MIN_C` and `SOIL_SCAN_TEMPERATURE_MAX_C`.
+
+## Future fusion architecture
+
+The Soil Scan service keeps separate seams for `extract_image_features`,
+`preprocess_sensor_features`, and `fuse_features`. The existing EfficientNetB0
+pooled image vector can be extracted without replacing its classifier.
+Sensor preprocessing currently validates and arranges EC, moisture, and
+temperature; it deliberately does not apply guessed scaling. `fuse_features`
+concatenates feature vectors as a future model input, but no trained fusion
+classifier currently consumes that vector. The multimodal endpoint therefore
+continues to report image-only classification and explicitly reports fusion as
+not trained.
+
+The intended trained model is an EfficientNetB0 image feature branch plus a
+sensor MLP branch, concatenated and passed through trained dense classification
+layers. Training and evaluation require paired image and sensor observations.
+
+## Paired dataset and model comparison
+
+The current image dataset (`train/`, `val/`, and `test/` folders by class) has
+no paired IoT measurements. Do not infer or fabricate those measurements.
+When paired observations are collected, a metadata file can use:
+
+```csv
+image_id,ec,moisture,temperature,soil_class
+```
+
+Keep image-only EfficientNetB0 (Model A), sensor-only ML (Model B), and
+multimodal fusion (Model C) as separate evaluation tracks. Calculate accuracy,
+precision, recall, F1-score, and confusion matrices only from documented,
+held-out measured data. No multimodal performance is reported by this prototype.
