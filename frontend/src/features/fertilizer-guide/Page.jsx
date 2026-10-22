@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import HistoryPage from './HistoryPage'
+import ShapExplorer from './ShapExplorer'
+import { saveHistory } from './localHistory'
+import SoilConditioning from './SoilConditioning'
 import {
   Leaf, LayoutGrid, Plus, ArrowRight, MapPin, Sun,
-  Droplets, Activity, FlaskConical, CalendarDays,
-  AlertCircle, Sprout, LoaderCircle, X, Info, Sparkles
+  Droplets, FlaskConical, CalendarDays,
+  AlertCircle, Sprout, LoaderCircle, X, Info, Sparkles, History
 } from 'lucide-react'
 import './Page.css'
+import fertilizerImages from './fertilizerImages.json'
 
 const API = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '') + '/fertilizer-guide'
 
@@ -13,6 +19,7 @@ const STAGES = {
   Rubber: ['Planting', 'Immature', 'Mature tapping'],
   Pepper: ['Establishment', 'Early maturity', 'Bearing'],
   Vanilla: ['Establishment', 'Vegetative', 'Pre-flowering', 'Pod development'],
+  Cocoa: ['Establishment', 'Early growth', 'Mature / pod production'],
 }
 
 const SOILS = {
@@ -20,7 +27,10 @@ const SOILS = {
   Rubber: 'Red-Yellow Podzolic (Ultisol)',
   Pepper: 'Red-Yellow Podzolic (Ultisol)',
   Vanilla: 'Loamy soil',
+  Cocoa: 'Loamy soil',
 }
+
+const SOIL_TYPES = [...new Set(Object.values(SOILS))]
 
 const DEFAULT = {
   crop: 'Tea',
@@ -32,7 +42,6 @@ const DEFAULT = {
   pH: '5',
   moisture: '58.7',
   temperature: '19.9',
-  EC: '1.99',
   plant_age_years: '',
   soil_series: '',
   bark_type: '',
@@ -46,8 +55,26 @@ const NUMBERS = [
   ['pH', 'Soil pH'],
   ['moisture', 'Moisture (%)'],
   ['temperature', 'Temperature (°C)'],
-  ['EC', 'Electrical conductivity (EC)'],
 ]
+
+function FertilizerImage({ name, type }) {
+  const [failed, setFailed] = useState(false)
+  const src = fertilizerImages[type]?.[name]
+  if (!src || failed) return null
+
+  return (
+    <figure className="fg-fertilizer-figure">
+    <img
+      className="fg-fertilizer-image"
+      src={src}
+      alt={name}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+    <figcaption>Illustrative image; product formulation may differ.</figcaption>
+    </figure>
+  )
+}
 
 function Rule({ rule }) {
   return (
@@ -100,7 +127,12 @@ function Rule({ rule }) {
 }
 
 export default function Page() {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const view = pathname.endsWith('/history') ? 'history' : pathname.endsWith('/soil-conditioning') ? 'conditioning' : 'dashboard'
+
   const [form, setForm] = useState(DEFAULT)
+  const [lab, setLab] = useState({ enabled: false, unit: '', method: '', source: '', N_min: '', P_min: '', K_min: '', pH_min: '', pH_max: '' })
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -146,10 +178,14 @@ export default function Page() {
   }
 
   function update(key, value) {
+    if (key === 'growth_stage') {
+      setLab(previous => ({ ...previous, enabled: false, N_min: '', P_min: '', K_min: '', pH_min: '', pH_max: '' }))
+    }
     setForm(previous => ({ ...previous, [key]: value }))
   }
 
   function changeCrop(crop) {
+    setLab(previous => ({ ...previous, enabled: false, N_min: '', P_min: '', K_min: '', pH_min: '', pH_max: '' }))
     setForm(previous => ({
       ...previous,
       crop,
@@ -167,10 +203,24 @@ export default function Page() {
     setLoading(true)
     setError('')
 
-    const payload = { ...form }
+    // The trained model requires EC; retain the existing baseline internally.
+    const payload = { ...form, EC: 1.99 }
 
     for (const [key] of NUMBERS) {
       payload[key] = Number(form[key])
+    }
+
+    if (lab.enabled) {
+      if (lab.pH_min !== '' && lab.pH_max !== '' && Number(lab.pH_min) > Number(lab.pH_max)) {
+        setError('The lower pH reference must not exceed the upper reference.')
+        setLoading(false)
+        return
+      }
+      payload.lab_reference = {
+        unit: lab.unit.trim(), method: lab.method.trim(), source: lab.source.trim(),
+        crop: form.crop, growth_stage: form.growth_stage,
+        ...Object.fromEntries(['N_min', 'P_min', 'K_min', 'pH_min', 'pH_max'].map(key => [key, lab[key] === '' ? null : Number(lab[key])])),
+      }
     }
 
     payload.plant_age_years =
@@ -210,9 +260,14 @@ export default function Page() {
         throw new Error(message)
       }
 
-      setResult(json)
+      try {
+        setResult(saveHistory(json))
+      } catch {
+        setResult({ ...json, local_save_error: 'Browser history could not be saved. Check available browser storage.' })
+      }
       setConnection('online')
       setShowForm(false)
+      navigate('/fertilizer-guide')
     } catch (e) {
       setError(e.message || 'Could not connect to the API.')
     } finally {
@@ -235,7 +290,7 @@ export default function Page() {
       label: 'Temperature',
       value: values.temperature,
       unit: '°C',
-      caption: 'Latest soil analysis',
+      caption: 'Entered soil temperature',
       icon: Sun,
     },
     {
@@ -244,13 +299,6 @@ export default function Page() {
       unit: '%',
       caption: 'Soil moisture level',
       icon: Droplets,
-    },
-    {
-      label: 'Electrical conductivity',
-      value: values.EC,
-      unit: '',
-      caption: 'Soil conductivity',
-      icon: Activity,
     },
   ]
 
@@ -265,8 +313,8 @@ export default function Page() {
               <Leaf size={25} />
             </span>
             <span>
-              <span>Saru Bima</span>{' '}
-              <span lang="si">සරු බිම</span>
+              <span>Saru Bima</span>
+              <span className="fg-brand-sinhala" lang="si">සරු බිම</span>
               <small>SMART AGRICULTURE</small>
             </span>
           </a>
@@ -276,21 +324,23 @@ export default function Page() {
           </div>
 
           <nav className="fg-nav" aria-label="Fertilizer navigation">
-            <a href="#fg-main" className="fg-nav-item fg-current">
+            <NavLink to="/fertilizer-guide" end className={({ isActive }) => 'fg-nav-item' + (isActive ? ' fg-current' : '')}>
               <LayoutGrid size={19} />
               <span>Fertilizer recommendations</span>
               <ArrowRight size={16} className="fg-nav-arrow" />
-            </a>
+            </NavLink>
 
-            <button type="button" className="fg-nav-item" onClick={newAnalysis}>
-              <Plus size={19} />
-              <span>New analysis</span>
-            </button>
+            <NavLink to="/fertilizer-guide/soil-conditioning" className={({ isActive }) => 'fg-nav-item' + (isActive ? ' fg-current' : '')}>
+              <Sprout size={19} /><span>Soil conditioning</span>
+            </NavLink>
+            <NavLink to="/fertilizer-guide/history" className={({ isActive }) => 'fg-nav-item' + (isActive ? ' fg-current' : '')}>
+              <History size={19} /><span>History</span>
+            </NavLink>
 
             <button
               type="button"
               className="fg-nav-item"
-              onClick={() => setHelp(!help)}
+              onClick={() => { setHelp(!help); navigate('/fertilizer-guide') }}
               aria-expanded={help}
             >
               <Info size={19} />
@@ -343,6 +393,11 @@ export default function Page() {
           </header>
 
           <main id="fg-main" className="fg-main">
+            {view === 'history' && <HistoryPage onOpen={record => { setResult(record); navigate('/fertilizer-guide') }} />}
+            {view === 'conditioning' && <SoilConditioning />}
+            {view === 'dashboard' && <>
+            {result?.local_save_error && <div className="fg-error" role="alert">{result.local_save_error}</div>}
+            {result?.saved_locally && <p className="fg-save-status" role="status">Saved to history in this browser.</p>}
             <div className="fg-page-heading">
               <div>
                 <div className="fg-eyebrow">GROW WITH INSIGHT</div>
@@ -359,7 +414,7 @@ export default function Page() {
                 onClick={newAnalysis}
               >
                 <Plus size={18} />
-                New analysis
+                New Fertilizer Recommendation
               </button>
             </div>
 
@@ -370,9 +425,6 @@ export default function Page() {
                 <span>Sri Lanka</span>
               </span>
 
-              <span className="fg-demo-tag">
-                SYNTHETIC DATA · RESEARCH DEMO
-              </span>
             </div>
 
             {help && (
@@ -391,6 +443,12 @@ export default function Page() {
                 </p>
               </section>
             )}
+
+            <section className="fg-crop-context" aria-label="Selected crop">
+              <h2>{values.crop ? `${values.crop} fertilizer plan` : 'Select a crop to start your fertilizer plan'}</h2>
+              {values.crop && <p>{values.growth_stage} / {values.soil_type}</p>}
+              <p>Manual measurements / Live IoT integration is not yet available.</p>
+            </section>
 
             {/* METRIC CARDS */}
             <section className="fg-metrics">
@@ -431,7 +489,7 @@ export default function Page() {
                 </h2>
                 <p>
                   {result
-                    ? 'Recommendations based on your latest soil analysis.'
+                    ? 'Recommendations based on your submitted soil measurements.'
                     : 'Run an analysis to explore fertilizers for your soil and crop.'}
                 </p>
               </div>
@@ -455,7 +513,7 @@ export default function Page() {
 
                 return (
                   <article
-                    className={"fg-recommendation-card " + (index === 0 ? "fg-featured" : "")}
+                    className="fg-recommendation-card"
                     key={item.key}
                   >
                     <div className="fg-card-top">
@@ -466,6 +524,14 @@ export default function Page() {
                         {index === 0 ? 'ORGANIC OPTION' : 'INORGANIC OPTION'}
                       </span>
                     </div>
+
+                    {prediction?.fertilizer && (
+                      <FertilizerImage
+                        key={prediction.fertilizer}
+                        name={prediction.fertilizer}
+                        type={item.key}
+                      />
+                    )}
 
                     <div className="fg-card-content">
                       <h3>{item.label}</h3>
@@ -482,7 +548,7 @@ export default function Page() {
                     </p>
 
                     <div className="fg-card-score">
-                      <span>MODEL CONFIDENCE</span>
+                      <span>MODEL SELECTION PROBABILITY</span>
                       <strong>
                         {prediction?.model_probability != null
                           ? (prediction.model_probability * 100).toFixed(1) + "%"
@@ -490,6 +556,7 @@ export default function Page() {
                       </strong>
                     </div>
 
+                    <p className="fg-score-note">Share of model probability assigned to this option among its fertilizer categories. This is not a crop-health score or a guarantee of field performance.</p>
                     <div className="fg-progress-track">
                       <span
                         style={{
@@ -518,6 +585,7 @@ export default function Page() {
 
             {result && (
               <>
+                <ShapExplorer explanations={result.explanations} onEdit={newAnalysis} />
                 <section className="fg-detail-panel">
                   <div className="fg-detail-header">
                     <span className="fg-detail-icon">
@@ -604,19 +672,10 @@ export default function Page() {
                   </div>
                 </section>
 
-                {result.warnings?.length > 0 && (
-                  <div className="fg-warnings">
-                    <strong><AlertCircle size={17} /> Research limitations</strong>
-                    <ul>
-                      {result.warnings.map((warning, index) => (
-                        <li key={index}>{warning}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </>
             )}
 
+            </>}
             <footer className="fg-footer">
               <span><Leaf size={15} /> Kegalle Research / Prototype</span>
               <span>Fertilizer recommendation system</span>
@@ -692,11 +751,15 @@ export default function Page() {
 
               <label className="fg-full-width">
                 Soil type
-                <input
+                <select
                   required
                   value={form.soil_type}
                   onChange={e => update('soil_type', e.target.value)}
-                />
+                >
+                  {SOIL_TYPES.map(soil => (
+                    <option key={soil} value={soil}>{soil}</option>
+                  ))}
+                </select>
               </label>
 
               <label>
@@ -754,7 +817,7 @@ export default function Page() {
                     type="number"
                     required
                     step="any"
-                    min={['N', 'P', 'K', 'EC', 'moisture', 'pH'].includes(key) ? 0 : undefined}
+                    min={['N', 'P', 'K', 'moisture', 'pH'].includes(key) ? 0 : undefined}
                     max={key === 'pH' ? 14 : key === 'moisture' ? 100 : undefined}
                     value={form[key]}
                     onChange={e => update(key, e.target.value)}
@@ -767,6 +830,16 @@ export default function Page() {
               NPK units are provisional until confirmed by the IoT team.
               Results are research prototypes, not field prescriptions.
             </p>
+          </fieldset>
+
+          <fieldset disabled={loading}>
+            <legend><span>03</span> Explain my soil test</legend>
+            <p className="fg-field-note">Optional: enter the reference values from your laboratory or crop adviser for {form.crop}, {form.growth_stage}. Measurements and thresholds must use the same units and test method. Without these, the explorer explains the model but does not diagnose nutrient deficiency.</p>
+            <label className="fg-lab-toggle"><input type="checkbox" checked={lab.enabled} onChange={e => setLab(previous => ({ ...previous, enabled: e.target.checked }))} />I have a crop-specific laboratory reference</label>
+            {lab.enabled && <div className="fg-form-grid">
+              {['unit', 'method', 'source'].map(key => <label key={key}>{({ unit: 'NPK measurement units', method: 'Laboratory test method', source: 'Reference report or adviser' })[key]}<input required maxLength={key === 'source' ? 240 : key === 'method' ? 160 : 80} value={lab[key]} onChange={e => setLab(previous => ({ ...previous, [key]: e.target.value }))} /></label>)}
+              {['N_min', 'P_min', 'K_min', 'pH_min', 'pH_max'].map(key => <label key={key}>{({ N_min: 'Nitrogen lower threshold', P_min: 'Phosphorus lower threshold', K_min: 'Potassium lower threshold', pH_min: 'Crop pH lower reference', pH_max: 'Crop pH upper reference' })[key]}<input type="number" min="0" max={key.startsWith('pH') ? 14 : undefined} step="any" placeholder="Optional" value={lab[key]} onChange={e => setLab(previous => ({ ...previous, [key]: e.target.value }))} /></label>)}
+            </div>}
           </fieldset>
 
           <details className="fg-advanced">
