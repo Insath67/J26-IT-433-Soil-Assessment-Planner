@@ -7,6 +7,7 @@ import ta from './locales/ta.json'
 
 import cropFinder from '../features/crop-finder/translations'
 import soilHealth from '../features/soil-health/translations'
+import soilHealthPages from '../features/soil-health/pageTranslations'
 
 const supportedLanguages = ['en', 'si', 'ta']
 const storageKey = 'saru-bima-language'

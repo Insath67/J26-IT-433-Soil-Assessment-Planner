@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import CropExplanation from './CropExplanation'
 import {
   Leaf,
   LayoutGrid,
@@ -661,9 +662,10 @@ export default function App() {
           )}
 
           <section
-            className="insight-panel"
-            aria-labelledby="why-title"
-            aria-live="polite"
+            cCropExplanation
+            active={active}
+             top={top}
+            warnings={warnings}
           >
             <div className="insight-header">
               <div className="insight-title">
