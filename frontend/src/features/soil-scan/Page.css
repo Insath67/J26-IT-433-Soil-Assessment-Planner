@@ -410,6 +410,106 @@
   line-height: 1.5;
 }
 
+.ss-iot-section {
+  margin-top: 31px;
+}
+
+.ss-iot-heading {
+  align-items: center;
+  margin: 0 0 16px;
+}
+
+.ss-iot-status {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+}
+
+.ss-sensor-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ss-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.ss-sensor-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e47a65;
+}
+
+.ss-sensor-status.is-ready i {
+  background: #69c58a;
+  box-shadow: 0 0 0 3px #69c58a20;
+}
+
+.ss-sensor-error {
+  margin: -6px 0 12px;
+  color: #e8bd76;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.ss-demo-sensor {
+  padding: 6px 8px;
+  border: 1px solid #66522d;
+  border-radius: 5px;
+  background: #393b25;
+  color: #e8c16d;
+  font-size: 8px;
+  letter-spacing: .35px;
+  white-space: nowrap;
+}
+
+.ss-iot-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ss-iot-card {
+  min-width: 0;
+  padding: 17px 19px;
+  border: 1px solid var(--ss-border);
+  border-radius: 10px;
+  background: var(--ss-panel);
+}
+
+.ss-iot-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ss-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.ss-iot-card-top svg {
+  flex-shrink: 0;
+  color: #8fc79a;
+}
+
+.ss-iot-value {
+  margin-top: 13px;
+  color: var(--ss-text);
+  font-size: 28px;
+  font-weight: 550;
+  letter-spacing: -1px;
+}
+
+.ss-iot-value span {
+  margin-left: 6px;
+  color: var(--ss-muted);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 .ss-section-heading {
   display: flex;
   align-items: center;
@@ -445,7 +545,7 @@
 
 .ss-analysis-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
   gap: 15px;
 }
@@ -689,6 +789,210 @@
   padding: 22px;
 }
 
+.ss-multimodal-card {
+  margin-top: 20px;
+  padding: 22px;
+  border: 1px solid var(--ss-border);
+  border-radius: 11px;
+  background: var(--ss-panel);
+}
+
+.ss-multimodal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ss-multimodal-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -.4px;
+}
+
+.ss-multimodal-header > div > p:last-child {
+  margin-top: 7px;
+  color: var(--ss-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.ss-research-badge {
+  flex: 0 0 auto;
+  padding: 7px 9px;
+  border-radius: 5px;
+  background: #233b2b;
+  color: #b1d5b7;
+  font-size: 8px;
+  letter-spacing: .6px;
+}
+
+.ss-input-sources {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 17px;
+}
+
+.ss-input-source {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 13px 12px;
+  border: 1px solid #2c4333;
+  border-radius: 8px;
+  background: #122319;
+}
+
+.ss-input-source-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: #233b2b;
+  color: #a5df96;
+}
+
+.ss-input-source > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ss-input-source strong {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.ss-input-source > div > span {
+  color: var(--ss-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.ss-fusion-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid #2b4332;
+  border-radius: 8px;
+  background: #101f16;
+}
+
+.ss-fusion-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.ss-fusion-inputs span,
+.ss-fusion-step {
+  padding: 8px 10px;
+  border: 1px solid #365441;
+  border-radius: 6px;
+  background: #1b3325;
+  color: #d8e8da;
+  font-size: 9px;
+  text-align: center;
+}
+
+.ss-fusion-inputs b {
+  color: #a5df96;
+  font-size: 12px;
+}
+
+.ss-fusion-arrow {
+  flex: 0 0 auto;
+  color: #87b591;
+}
+
+.ss-fusion-step {
+  background: #233b2b;
+  color: #b8dfbd;
+  font-weight: 600;
+}
+
+.ss-fusion-output {
+  border-color: #52705b;
+  background: #243c2b;
+  color: #c5e7c9;
+}
+
+.ss-fusion-note {
+  margin-top: 12px;
+  color: var(--ss-muted);
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+.ss-result-area {
+  margin-top: 16px;
+}
+
+.ss-iot-result {
+  display: grid;
+  gap: 9px;
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--ss-border);
+  border-radius: 8px;
+  background: #122319;
+}
+
+.ss-iot-result h4 {
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ss-iot-result > div,
+.ss-fusion-result > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ss-muted);
+  font-size: 10px;
+}
+
+.ss-iot-result > div strong,
+.ss-fusion-result > div strong {
+  color: var(--ss-text);
+  font-size: 10px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.ss-iot-result .ss-demo-sensor {
+  justify-self: start;
+  margin-top: 3px;
+}
+
+.ss-fusion-result {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #66522d;
+  border-radius: 8px;
+  background: #242317;
+}
+
+.ss-fusion-result p {
+  color: #d0c39f;
+  font-size: 9px;
+  line-height: 1.7;
+}
+
 .ss-result-header {
   display: flex;
   align-items: flex-start;
@@ -929,8 +1233,31 @@
 }
 
 @media (max-width: 650px) {
-  .ss-analysis-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .ss-iot-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ss-iot-status {
+    flex-wrap: wrap;
+  }
+
+  .ss-iot-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ss-input-sources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ss-fusion-flow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ss-fusion-arrow {
+    align-self: center;
+    transform: rotate(90deg);
   }
 
   .ss-upload-area,
@@ -969,6 +1296,22 @@
   }
 
   .ss-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ss-iot-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ss-multimodal-card {
+    padding: 17px;
+  }
+
+  .ss-multimodal-header {
+    flex-direction: column;
+  }
+
+  .ss-input-sources {
     grid-template-columns: minmax(0, 1fr);
   }
 

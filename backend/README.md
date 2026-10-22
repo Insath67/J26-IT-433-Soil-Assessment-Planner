@@ -19,7 +19,10 @@ The supplied Flask crop API was migrated to FastAPI. Its inference logic is in `
 | Method | Path | Behavior |
 | --- | --- | --- |
 | GET | `/api/health` | Shared health |
-| GET | `/api/soil-scan/status` | Explicit not-implemented status |
+| GET | `/api/soil-scan/status` | Soil Scan model status |
+| GET | `/api/soil-scan/sensor-data` | Clearly marked demo sensor readings |
+| POST | `/api/soil-scan/predict` | Existing image-only EfficientNetB0 prediction |
+| POST | `/api/soil-scan/predict-multimodal` | Image prediction + validated sensor inputs; fusion is not trained |
 | GET | `/api/soil-health/status` | Explicit not-implemented status |
 | GET | `/api/crop-finder/health` | Crop model/weather configuration |
 | GET | `/api/crop-finder/metadata` | Features, samples, labels and ranges |

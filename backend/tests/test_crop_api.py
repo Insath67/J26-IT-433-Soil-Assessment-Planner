@@ -57,10 +57,15 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(self.client.get('/api/crop-finder/metadata').json()['features'], FEATURES)
 
     def test_other_member_routes(self):
-        for slug in ['soil-scan', 'soil-health', 'fertilizer-guide']:
+        expected_statuses = {
+            'soil-scan': 'ready',
+            'soil-health': 'active',
+            'fertilizer-guide': 'ready',
+        }
+        for slug, expected_status in expected_statuses.items():
             response = self.client.get(f'/api/{slug}/status')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json()['status'], 'not_implemented')
+            self.assertEqual(response.json()['status'], expected_status)
 
 if __name__ == '__main__':
     unittest.main()
