@@ -4,7 +4,9 @@ import { initReactI18next } from 'react-i18next'
 import en from './locales/en.json'
 import si from './locales/si.json'
 import ta from './locales/ta.json'
+
 import cropFinder from '../features/crop-finder/translations'
+import soilHealth from '../features/soil-health/translations'
 
 const supportedLanguages = ['en', 'si', 'ta']
 const storageKey = 'saru-bima-language'
@@ -12,7 +14,10 @@ const storageKey = 'saru-bima-language'
 function getSavedLanguage() {
   try {
     const saved = localStorage.getItem(storageKey)
-    return supportedLanguages.includes(saved) ? saved : 'en'
+
+    return supportedLanguages.includes(saved)
+      ? saved
+      : 'en'
   } catch {
     return 'en'
   }
@@ -29,7 +34,7 @@ function applyLanguage(language) {
   try {
     localStorage.setItem(storageKey, selected)
   } catch {
-    // Language switching still works if browser storage is unavailable.
+    // Language switching still works without browser storage.
   }
 }
 
@@ -38,18 +43,25 @@ i18n.use(initReactI18next).init({
     en: {
       translation: en,
       cropFinder: cropFinder.en,
+      soilHealth: soilHealth.en,
     },
+
     si: {
       translation: si,
       cropFinder: cropFinder.si,
+      soilHealth: soilHealth.si,
     },
+
     ta: {
       translation: ta,
       cropFinder: cropFinder.ta,
+      soilHealth: soilHealth.ta,
     },
   },
 
+  ns: ['translation', 'cropFinder', 'soilHealth'],
   defaultNS: 'translation',
+
   lng: getSavedLanguage(),
   fallbackLng: 'en',
   supportedLngs: supportedLanguages,
@@ -59,7 +71,7 @@ i18n.use(initReactI18next).init({
   },
 })
 
-applyLanguage(i18n.language)
+applyLanguage(i18n.resolvedLanguage || i18n.language)
 i18n.on('languageChanged', applyLanguage)
 
 export default i18n

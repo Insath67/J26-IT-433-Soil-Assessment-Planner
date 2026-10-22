@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next'
 import {
   FlaskConical,
   Droplets,
@@ -24,6 +25,7 @@ import { downloadSoilReportPdf } from "../services/pdfGenerator";
 function Dashboard() {
   const [soilData, setSoilData] = useState(() => getActiveSample());
   const [allSamples, setAllSamples] = useState(() => getAllSamples());
+  const { t } = useTranslation('soilHealth')
 
   // Listen for storage updates and sample changes
   useEffect(() => {
@@ -71,7 +73,7 @@ function Dashboard() {
             </span>
             <span className="agro-zone-tag">{soilData.district || "Wet Zone WL2a"}</span>
           </div>
-          <h1 className="page-title">Soil Fertility Dashboard</h1>
+          <h1 className="page-title">{t('pages.dashboard')}</h1>
           <p className="page-subtitle">
             Real-time IoT sensor telemetry, image-processing soil assessment and AI fertility classification for Sri Lanka.
           </p>
@@ -106,14 +108,14 @@ function Dashboard() {
             </select>
           </div>
 
-          <button 
-            className="secondary-btn"
-            onClick={handleDownloadPdf}
-            title="Download PDF assessment report for active specimen"
-          >
-            <FileDown size={16} />
-            <span>Download PDF</span>
-          </button>
+          <button
+  className="secondary-btn"
+  onClick={handleDownloadPdf}
+  title={t('common.downloadPdf')}
+>
+  <FileDown size={16} />
+  <span>{t('common.downloadPdf')}</span>
+</button>
 
           <Link to="/soil-health/analysis" className="primary-btn">
             <Plus size={17} strokeWidth={2.5} />

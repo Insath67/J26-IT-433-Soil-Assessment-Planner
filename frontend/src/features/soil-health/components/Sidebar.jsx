@@ -90,7 +90,7 @@ function Sidebar() {
         >
           <div className="nav-item-left">
             <ArrowLeft size={19} />
-            <span>Verdant Home</span>
+            <span>Saru Bima Home</span>
           </div>
         </NavLink>
       </nav>
