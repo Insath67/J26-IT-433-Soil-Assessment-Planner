@@ -1,4 +1,3 @@
-
 import { Routes, Route } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
@@ -11,6 +10,7 @@ import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 
 import "./SoilHealth.css";
+import "./SoilHealthTheme.css";
 
 export default function Page() {
   return (
@@ -20,7 +20,7 @@ export default function Page() {
       <div className="app-content">
         <Navbar />
 
-        <main className="main-content">
+        <main id="content" className="main-content">
           <Routes>
             <Route index element={<Dashboard />} />
 

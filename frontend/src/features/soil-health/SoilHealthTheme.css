@@ -1,0 +1,326 @@
+/* Sidebar stays inside the Soil Health module. */
+.soil-health-module {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  align-items: stretch;
+  height: auto;
+}
+
+.soil-health-module > .sidebar {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  box-sizing: border-box;
+  z-index: auto;
+}
+
+.soil-health-module > .app-content {
+  margin-left: 0;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.soil-health-module .main-content {
+  min-width: 0;
+}
+
+.soil-health-module .sidebar-footer {
+  position: static;
+  inset: auto;
+  margin-top: auto;
+}
+
+.soil-health-module .top-navbar {
+  position: relative;
+  top: auto;
+  height: auto;
+  min-height: 72px;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  z-index: auto;
+}
+
+/* Shared language fonts */
+html[lang='si'] .soil-health-module {
+  font-family: 'Noto Sans Sinhala Variable', sans-serif;
+}
+
+html[lang='ta'] .soil-health-module {
+  font-family: 'Noto Sans Tamil Variable', sans-serif;
+}
+
+.soil-health-module :is(button, input, select, textarea) {
+  font-family: inherit;
+}
+
+/* Shared dark theme */
+html[data-theme='dark'] .soil-health-module {
+  --black-primary: #edf7ef;
+  --black-secondary: #dbeade;
+  --black-muted: #c2d4c7;
+  --text-muted: #b3c7b9;
+  --text-light: #a5bcae;
+
+  --bg-page: #101b15;
+  --bg-surface: #18281e;
+  --bg-subtle: #203528;
+  --border-light: #3c5745;
+  --border-subtle: #304937;
+
+  background: var(--bg-page);
+  color: var(--black-primary);
+}
+
+/* Keep --white unchanged: it is also used for button text. */
+html[data-theme='dark'] .soil-health-module :is(
+  .sidebar,
+  .top-navbar,
+  .subpage-card,
+  .sample-card-glass,
+  .table-card,
+  .dashboard-actions-panel
+) {
+  background: var(--bg-surface);
+  color: var(--black-primary);
+  border-color: var(--border-light);
+}
+
+html[data-theme='dark'] .soil-health-module .sidebar-footer {
+  background: var(--bg-subtle);
+  border-color: var(--border-light);
+}
+
+html[data-theme='dark'] .soil-health-module :is(
+  .page-title,
+  .section-title,
+  .navbar-heading,
+  .meta-value,
+  .footer-id,
+  .footer-tag,
+  .iot-card-header,
+  .iot-status-indicator,
+  .text-dark-green
+) {
+  color: #def2e3;
+}
+
+html[data-theme='dark'] .soil-health-module :is(
+  .form-input,
+  .form-select,
+  textarea
+) {
+  background: var(--bg-subtle);
+  color: var(--black-primary);
+  border-color: var(--border-light);
+}
+
+html[data-theme='dark'] .soil-health-module .secondary-btn {
+  background: var(--bg-subtle);
+  color: #e6f5ea;
+  border-color: var(--border-light);
+}
+
+html[data-theme='dark'] .soil-health-module .nav-item:hover {
+  background: #294434;
+  color: #ffffff;
+}
+
+html[data-theme='dark'] .soil-health-module .nav-item.active {
+  background: #245636;
+  color: #ffffff;
+}
+
+html[data-theme='dark'] .soil-health-module .custom-table th {
+  background: var(--bg-subtle);
+  color: #e6f5ea;
+}
+
+html[data-theme='dark'] .soil-health-module .custom-table td {
+  border-color: var(--border-light);
+}
+
+@media (max-width: 900px) {
+  .soil-health-module {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .soil-health-module > .sidebar {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .soil-health-module .sidebar-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .soil-health-module .sidebar-footer {
+    margin-top: 16px;
+  }
+
+  .soil-health-module .main-content {
+    padding: 20px 16px 32px;
+  }
+
+  .soil-health-module .top-navbar {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .soil-health-module .sidebar-nav {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Soil Health: readable cards in dark mode */
+@media screen {
+  /* Sensor cards and fertility assessment card */
+  html[data-theme='dark'] .soil-health-module :is(
+    .sensor-card,
+    .fertility-hero-card,
+    .crop-card
+  ) {
+    background: #182b21;
+    color: #f0f7f2;
+    border-color: #42614d;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
+  }
+
+  html[data-theme='dark'] .soil-health-module :is(
+    .sensor-card:hover,
+    .crop-card:hover
+  ) {
+    background: #1d3427;
+    border-color: #70d995;
+  }
+
+  /* Titles, readings and fertility score */
+  html[data-theme='dark'] .soil-health-module :is(
+    .sensor-name,
+    .sensor-value,
+    .gauge-number,
+    .fertility-heading,
+    .crop-name,
+    .submetric-label strong,
+    .sensor-range-caption strong
+  ) {
+    color: #f0f7f2;
+  }
+
+  /* Units, descriptions and supporting text */
+  html[data-theme='dark'] .soil-health-module :is(
+    .sensor-unit,
+    .sensor-range-caption,
+    .gauge-denom,
+    .fertility-description,
+    .fertility-grade-sub,
+    .sample-tag-ref,
+    .submetric-label,
+    .crop-botanical,
+    .crop-notes,
+    .crop-zone-label
+  ) {
+    color: #bfd2c5;
+  }
+
+  /* Sensor icons and green labels */
+  html[data-theme='dark'] .soil-health-module :is(
+    .chemical-symbol,
+    .sensor-icon-wrapper,
+    .sensor-count-badge,
+    .fertility-ai-badge,
+    .crop-tag,
+    .crop-match-badge
+  ) {
+    background: #203e2c;
+    color: #b2f2c7;
+    border-color: #487b58;
+  }
+
+  html[data-theme='dark'] .soil-health-module :is(
+    .crop-match-val,
+    .crop-match-sub
+  ) {
+    color: #b2f2c7;
+  }
+
+  /* Normal / sufficient / suitable status */
+  html[data-theme='dark'] .soil-health-module :is(
+    .status-badge-optimal,
+    .status-sufficient,
+    .status-suitable,
+    .pill-medium,
+    .pill-sufficient,
+    .pill-high
+  ) {
+    background: #203e2c;
+    color: #b2f2c7;
+    border-color: #487b58;
+  }
+
+  /* Deficient / low status */
+  html[data-theme='dark'] .soil-health-module :is(
+    .status-badge-deficient,
+    .status-deficient,
+    .pill-low
+  ) {
+    background: #452327;
+    color: #ffc4c4;
+    border-color: #925058;
+  }
+
+  /* High nutrient reading */
+  html[data-theme='dark'] .soil-health-module .status-badge-high {
+    background: #44341d;
+    color: #ffdc9a;
+    border-color: #8c6a36;
+  }
+
+  /* Progress bar backgrounds */
+  html[data-theme='dark'] .soil-health-module :is(
+    .sensor-bar-track,
+    .submetric-bar,
+    .crop-bar-wrap
+  ) {
+    background: #3a5143;
+  }
+
+  html[data-theme='dark'] .soil-health-module :is(
+    .bar-optimal,
+    .submetric-fill,
+    .crop-bar-fill
+  ) {
+    background: linear-gradient(90deg, #22c55e, #86efac);
+  }
+
+  /* Circular fertility gauge */
+  html[data-theme='dark'] .soil-health-module .gauge-bg {
+    stroke: #3a5143;
+  }
+
+  html[data-theme='dark'] .soil-health-module .gauge-progress {
+    stroke: #4ade80;
+  }
+
+  html[data-theme='dark'] .soil-health-module .fertility-score-box {
+    border-color: #42614d;
+  }
+
+  /* Table row hover: avoid white background with light text */
+  html[data-theme='dark'] .soil-health-module .custom-table tbody tr:hover {
+    background: #243d2e;
+  }
+}
