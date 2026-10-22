@@ -60,7 +60,9 @@ export default function App() {
 
   const pageKey = isSoilHealthPage
     ? PAGE_KEYS["/soil-health"]
-    : PAGE_KEYS[pathname];
+    : pathname.startsWith("/fertilizer-guide/")
+      ? PAGE_KEYS["/fertilizer-guide"]
+      : PAGE_KEYS[pathname];
 
   const pageTitle = pageKey
     ? t(pageKey)
@@ -118,7 +120,7 @@ export default function App() {
         />
 
         <Route
-          path="/fertilizer-guide"
+          path="/fertilizer-guide/*"
           element={<FertilizerGuide />}
         />
 

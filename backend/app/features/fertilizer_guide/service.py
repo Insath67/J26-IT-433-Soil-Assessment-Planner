@@ -6,15 +6,18 @@ from pathlib import Path
 import re
 import joblib
 import pandas as pd
+from .explanations import model_attribution, explain
 
 BASE = Path(__file__).resolve().parent
 FEATURES = ['crop', 'soil_type', 'N', 'P', 'K', 'pH', 'moisture', 'temperature', 'EC']
 
 
+# Ignore capitalization and extra spaces when matching rule text.
 def norm(value):
     return ' '.join(str(value or '').casefold().split())
 
 
+# Check whether the plant age fits a rule, including ranges and month-based ages.
 def age_ok(age_text, age):
     if age is None or not str(age_text).strip() or norm(age_text) in ('any', 'all'):
         return True
@@ -36,6 +39,7 @@ def age_ok(age_text, age):
     return bool(m and abs(age - float(m.group(1))) < 0.5)
 
 
+# Soil-series-specific quantities require a matching confirmed soil series.
 def series_ok(rule_series, requested_series):
     if not str(rule_series).strip():
         return True
@@ -44,6 +48,7 @@ def series_ok(rule_series, requested_series):
     return any(norm(requested_series) == norm(option) for option in str(rule_series).split('/')) or norm(requested_series) in norm(rule_series)
 
 
+# Load trained models and application rules once, then reuse them.
 @lru_cache(maxsize=1)
 def resources():
     organic = joblib.load(BASE / 'models' / 'organic_fertilizer_model.joblib')
@@ -56,6 +61,7 @@ def resources():
     return organic, inorganic, rules
 
 
+# Match crop, stage, age and fertilizer before returning quantities or general methods.
 def matching_rules(rules, crop, stage, label, age=None, soil_series=None):
     """Prefer an age/series-compatible specific rule; otherwise return general method only."""
     subset = rules[(rules['crop'].map(norm) == norm(crop)) & (rules['growth_stage'].map(norm) == norm(stage))]
@@ -72,15 +78,19 @@ def matching_rules(rules, crop, stage, label, age=None, soil_series=None):
     return [], general.head(1).to_dict('records')
 
 
+# Combine model predictions, SHAP explanations and matching application guidance.
 def recommend(inputs):
     organic, inorganic, rules = resources()
     values = inputs.model_dump()
+    # Preserve the feature order expected by the trained models.
     frame = pd.DataFrame([{k: values[k] for k in FEATURES}], columns=FEATURES)
     predictions = {}
+    attributions = {}
     for category, model in [('organic', organic), ('inorganic', inorganic)]:
         label = str(model.predict(frame)[0])
         probability = float(model.predict_proba(frame).max(axis=1)[0]) if hasattr(model, 'predict_proba') else None
         predictions[category] = {'fertilizer': label, 'model_probability': probability}
+        attributions[category] = model_attribution(model, frame, label)
     matched, guidance, unmatched = [], [], []
     for category, prediction in predictions.items():
         label = prediction['fertilizer']
@@ -90,9 +100,11 @@ def recommend(inputs):
             guidance.append({'category': category, 'fertilizer': label, **fallback[0]})
         if not exact:
             unmatched.append({'category': category, 'fertilizer': label, 'message': 'Crop-stage application guidance is provided. A fertilizer-specific dose is not established for these inputs.', 'available_rules': fallback})
+    # A rule can match more than one option; show it only once.
     unique = {str(r['rule_id']): r for r in matched}
     return {
         'inputs': values, 'ml_predictions': predictions,
+        'explanations': explain(values, predictions, attributions),
         'application_rules': list(unique.values()),
         'general_application_guidance': guidance[0] if guidance else None,
         'application_guidance_by_category': guidance,
