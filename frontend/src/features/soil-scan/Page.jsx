@@ -5,6 +5,8 @@ import {
   ArrowRight,
   CheckCircle2,
   Cpu,
+  Droplets,
+  Gauge,
   Info,
   Layers3,
   Leaf,
@@ -13,6 +15,7 @@ import {
   Plus,
   RotateCcw,
   ScanLine,
+  Thermometer,
   Upload,
   X,
 } from 'lucide-react'
@@ -41,6 +44,33 @@ function isPredictionResponse(data) {
   )
 }
 
+function isMultimodalResponse(data) {
+  return (
+    data?.status === 'success' &&
+    data.mode === 'image_plus_iot' &&
+    isPredictionResponse(data.image_prediction) &&
+    typeof data.sensor_data?.ec === 'number' &&
+    Number.isFinite(data.sensor_data.ec) &&
+    typeof data.sensor_data?.moisture === 'number' &&
+    Number.isFinite(data.sensor_data.moisture) &&
+    typeof data.sensor_data?.temperature === 'number' &&
+    Number.isFinite(data.sensor_data.temperature) &&
+    data.fusion?.status === 'not_trained'
+  )
+}
+
+function isSensorDataResponse(data) {
+  return (
+    data?.status === 'success' &&
+    ['demo', 'hardware'].includes(data.source) &&
+    typeof data.connected === 'boolean' &&
+    ['ec', 'moisture', 'temperature'].every(
+      key => typeof data.sensor_data?.[key] === 'number' &&
+        Number.isFinite(data.sensor_data[key])
+    )
+  )
+}
+
 export default function Page() {
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState('')
@@ -50,6 +80,14 @@ export default function Page() {
   const [dragActive, setDragActive] = useState(false)
   const [help, setHelp] = useState(false)
   const [connection, setConnection] = useState('checking')
+  const [sensorData, setSensorData] = useState({
+    ec: 1.24,
+    moisture: 62,
+    temperature: 28.4,
+    connected: false,
+    source: 'demo',
+  })
+  const [sensorError, setSensorError] = useState('')
   const fileInputRef = useRef(null)
   const uploadRef = useRef(null)
 
@@ -61,12 +99,29 @@ export default function Page() {
   useEffect(() => {
     let mounted = true
 
-    requestApi('/health')
-      .then(data => {
-        if (mounted) setConnection(data?.status === 'ok' ? 'online' : 'offline')
+    Promise.all([
+      requestApi('/health'),
+      requestApi('/soil-scan/sensor-data'),
+    ])
+      .then(([health, sensorResponse]) => {
+        if (!mounted) return
+        setConnection(health?.status === 'ok' ? 'online' : 'offline')
+        if (!isSensorDataResponse(sensorResponse)) {
+          setSensorError('Sensor data response was invalid; showing labeled demo values.')
+          return
+        }
+        setSensorData({
+          ...sensorResponse.sensor_data,
+          source: sensorResponse.source,
+          connected: sensorResponse.connected,
+        })
+        setSensorError('')
       })
       .catch(() => {
-        if (mounted) setConnection('offline')
+        if (mounted) {
+          setConnection('offline')
+          setSensorError('Sensor service unavailable; showing labeled demo values.')
+        }
       })
 
     return () => {
@@ -146,13 +201,16 @@ export default function Page() {
     try {
       const formData = new FormData()
       formData.append('file', file)
+      formData.append('ec', String(sensorData.ec))
+      formData.append('moisture', String(sensorData.moisture))
+      formData.append('temperature', String(sensorData.temperature))
 
-      const data = await requestApi('/soil-scan/predict', {
+      const data = await requestApi('/soil-scan/predict-multimodal', {
         method: 'POST',
         body: formData,
       })
 
-      if (!isPredictionResponse(data)) {
+      if (!isMultimodalResponse(data)) {
         throw new Error('The server returned an invalid prediction. Please try again.')
       }
 
@@ -333,6 +391,69 @@ export default function Page() {
               })}
             </section>
 
+            <section className="ss-iot-section" aria-labelledby="soil-iot-title">
+              <div className="ss-section-heading ss-iot-heading">
+                <div>
+                  <h2 id="soil-iot-title">Live IoT Soil Data</h2>
+                  <p>Soil measurements for the image + IoT research prototype.</p>
+                </div>
+                <div className="ss-iot-status">
+                  <span
+                    className={`ss-sensor-status${sensorData.connected || sensorData.source === 'demo' ? ' is-ready' : ''}`}
+                  >
+                    <i aria-hidden="true" />
+                    {sensorData.connected
+                      ? 'Sensor data ready'
+                      : sensorData.source === 'demo'
+                        ? 'Demo values ready'
+                        : 'Sensor unavailable'}
+                  </span>
+                  {sensorData.source === 'demo' && (
+                    <span className="ss-demo-sensor">Demo sensor data</span>
+                  )}
+                </div>
+              </div>
+
+              {sensorError && <p className="ss-sensor-error" role="status">{sensorError}</p>}
+
+              <div className="ss-iot-cards">
+                {[
+                  {
+                    label: 'Electrical Conductivity',
+                    value: sensorData.ec,
+                    unit: 'mS/cm',
+                    icon: Gauge,
+                  },
+                  {
+                    label: 'Soil Moisture',
+                    value: sensorData.moisture,
+                    unit: '%',
+                    icon: Droplets,
+                  },
+                  {
+                    label: 'Soil Temperature',
+                    value: sensorData.temperature,
+                    unit: '°C',
+                    icon: Thermometer,
+                  },
+                ].map(sensor => {
+                  const Icon = sensor.icon
+                  return (
+                    <article className="ss-iot-card" key={sensor.label}>
+                      <div className="ss-iot-card-top">
+                        <span>{sensor.label}</span>
+                        <Icon size={19} aria-hidden="true" />
+                      </div>
+                      <div className="ss-iot-value">
+                        {sensor.value}
+                        <span>{sensor.unit}</span>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </section>
+
             <div className="ss-section-heading">
               <div>
                 <h2>Soil image analysis <span>IMAGE CLASSIFICATION</span></h2>
@@ -428,103 +549,172 @@ export default function Page() {
                 </button>
                 <p className="ss-upload-footnote">Supported formats: JPG, JPEG, PNG and WEBP</p>
               </article>
-
-              {error ? (
-                <section className="ss-state-card ss-error-card" role="alert">
-                  <span className="ss-state-icon">
-                    <AlertCircle size={23} aria-hidden="true" />
-                  </span>
-                  <h3>Analysis could not be completed</h3>
-                  <p>{error}</p>
-                  <button type="button" className="ss-secondary" onClick={resetScan}>
-                    <RotateCcw size={16} aria-hidden="true" />
-                    Try another image
-                  </button>
-                </section>
-              ) : result ? (
-                <section className="ss-result-card" aria-labelledby="soil-result-title">
-                  <div className="ss-result-header">
-                    <div>
-                      <p className="ss-result-eyebrow">AI CLASSIFICATION</p>
-                      <h3 id="soil-result-title">AI soil classification</h3>
-                    </div>
-                    <CheckCircle2 size={25} aria-hidden="true" />
-                  </div>
-
-                  <div className="ss-prediction">
-                    <span>Predicted soil type</span>
-                    <strong>{result.predicted_class}</strong>
-                  </div>
-
-                  <div className="ss-confidence">
-                    <span>Confidence</span>
-                    <strong>{(result.confidence * 100).toFixed(2)}%</strong>
-                  </div>
-
-                  <div className="ss-probabilities">
-                    <h4>Probability distribution</h4>
-                    {SOIL_CLASSES.map(soilClass => {
-                      const probability = result.probabilities[soilClass]
-                      const percentage = probability * 100
-                      const isPredicted = soilClass === result.predicted_class
-
-                      return (
-                        <div
-                          key={soilClass}
-                          className={`ss-probability${isPredicted ? ' is-predicted' : ''}`}
-                        >
-                          <div className="ss-probability-label">
-                            <span>
-                              {soilClass}
-                              {isPredicted && <span className="ss-predicted-badge">Predicted</span>}
-                            </span>
-                            <strong>{percentage.toFixed(2)}%</strong>
-                          </div>
-                          <div
-                            className="ss-progress"
-                            role="progressbar"
-                            aria-label={`${soilClass} probability`}
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            aria-valuenow={percentage.toFixed(2)}
-                          >
-                            <div className="ss-progress-value" style={{ width: `${percentage}%` }} />
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  <p className="ss-result-note">
-                    The classification is generated from the uploaded soil image
-                    using the integrated EfficientNetB0 model.
-                  </p>
-                  <button type="button" className="ss-secondary" onClick={resetScan}>
-                    <RotateCcw size={16} aria-hidden="true" />
-                    Scan another image
-                  </button>
-                </section>
-              ) : (
-                <section className="ss-state-card" aria-live="polite">
-                  <span className="ss-state-icon">
-                    {busy ? (
-                      <Loader2 size={23} className="ss-spin" aria-hidden="true" />
-                    ) : (
-                      <ScanLine size={23} aria-hidden="true" />
-                    )}
-                  </span>
-                  <h3>{busy ? 'Analyzing soil image' : file ? 'Image ready for analysis' : 'Awaiting soil image'}</h3>
-                  <p>
-                    {busy
-                      ? 'The model is processing your uploaded image.'
-                      : file
-                        ? 'Your image is ready. Select Analyze soil to see the classification.'
-                        : 'Upload a clear soil image to begin analysis.'}
-                  </p>
-                  {busy && <span className="ss-loading-indicator">Processing image</span>}
-                </section>
-              )}
             </section>
+
+            <section className="ss-multimodal-card" aria-labelledby="ss-multimodal-title">
+              <div className="ss-multimodal-header">
+                <div>
+                  <p className="ss-result-eyebrow">RESEARCH PROTOTYPE</p>
+                  <h2 id="ss-multimodal-title">Multimodal Soil Analysis</h2>
+                  <p>RGB Soil Image + EC + Moisture + Soil Temperature</p>
+                </div>
+                <span className="ss-research-badge">Image + IoT Feature Fusion</span>
+              </div>
+
+              <div className="ss-input-sources">
+                {[
+                  { label: 'Soil Image', detail: 'EfficientNetB0 · Visual features', icon: ScanLine },
+                  { label: 'EC', detail: 'Electrical conductivity', icon: Gauge },
+                  { label: 'Moisture', detail: 'Soil moisture percentage', icon: Droplets },
+                  { label: 'Temperature', detail: 'Soil temperature', icon: Thermometer },
+                ].map(source => {
+                  const Icon = source.icon
+                  return (
+                    <article className="ss-input-source" key={source.label}>
+                      <span className="ss-input-source-icon">
+                        <Icon size={18} aria-hidden="true" />
+                      </span>
+                      <div>
+                        <strong>{source.label}</strong>
+                        <span>{source.detail}</span>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+
+              <div className="ss-fusion-flow" aria-label="Planned feature fusion architecture">
+                <div className="ss-fusion-inputs">
+                  <span>Image Features</span>
+                  <b>+</b>
+                  <span>IoT Sensor Features</span>
+                </div>
+                <ArrowRight className="ss-fusion-arrow" size={17} aria-hidden="true" />
+                <span className="ss-fusion-step">Feature Fusion</span>
+                <ArrowRight className="ss-fusion-arrow" size={17} aria-hidden="true" />
+                <span className="ss-fusion-step ss-fusion-output">Soil Classification</span>
+              </div>
+
+              <p className="ss-fusion-note">
+                Architecture preview only. Until a fusion model is trained on paired image
+                and sensor data, the current prediction remains image-only.
+              </p>
+            </section>
+
+            {error ? (
+              <section className="ss-state-card ss-error-card ss-result-area" role="alert">
+                <span className="ss-state-icon">
+                  <AlertCircle size={23} aria-hidden="true" />
+                </span>
+                <h3>Analysis could not be completed</h3>
+                <p>{error}</p>
+                <button type="button" className="ss-secondary" onClick={resetScan}>
+                  <RotateCcw size={16} aria-hidden="true" />
+                  Try another image
+                </button>
+              </section>
+            ) : result ? (
+              <section className="ss-result-card ss-result-area" aria-labelledby="soil-result-title">
+                <div className="ss-result-header">
+                  <div>
+                    <p className="ss-result-eyebrow">SOIL CLASSIFICATION</p>
+                    <h3 id="soil-result-title">AI soil classification</h3>
+                  </div>
+                  <CheckCircle2 size={25} aria-hidden="true" />
+                </div>
+
+                <div className="ss-prediction">
+                  <span>Predicted soil</span>
+                  <strong>{result.image_prediction.predicted_class}</strong>
+                </div>
+
+                <div className="ss-confidence">
+                  <span>Image-model confidence</span>
+                  <strong>{(result.image_prediction.confidence * 100).toFixed(2)}%</strong>
+                </div>
+
+                <div className="ss-probabilities">
+                  <h4>Image model probability distribution</h4>
+                  {SOIL_CLASSES.map(soilClass => {
+                    const probability = result.image_prediction.probabilities[soilClass]
+                    const percentage = probability * 100
+                    const isPredicted = soilClass === result.image_prediction.predicted_class
+
+                    return (
+                      <div
+                        key={soilClass}
+                        className={`ss-probability${isPredicted ? ' is-predicted' : ''}`}
+                      >
+                        <div className="ss-probability-label">
+                          <span>
+                            {soilClass}
+                            {isPredicted && <span className="ss-predicted-badge">Predicted</span>}
+                          </span>
+                          <strong>{percentage.toFixed(2)}%</strong>
+                        </div>
+                        <div
+                          className="ss-progress"
+                          role="progressbar"
+                          aria-label={`${soilClass} probability`}
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-valuenow={percentage.toFixed(2)}
+                        >
+                          <div className="ss-progress-value" style={{ width: `${percentage}%` }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="ss-iot-result">
+                  <h4>IoT Soil Conditions</h4>
+                  <div><span>EC</span><strong>{result.sensor_data.ec} mS/cm</strong></div>
+                  <div><span>Moisture</span><strong>{result.sensor_data.moisture} %</strong></div>
+                  <div><span>Temperature</span><strong>{result.sensor_data.temperature} °C</strong></div>
+                  {sensorData.source === 'demo' && (
+                    <span className="ss-demo-sensor">Demo sensor data</span>
+                  )}
+                </div>
+
+                <div className="ss-fusion-result">
+                  <div><span>Analysis mode</span><strong>Image + IoT</strong></div>
+                  <div>
+                    <span>Fusion status</span>
+                    <strong>Fusion model training required</strong>
+                  </div>
+                  <p>{result.fusion.message}</p>
+                </div>
+
+                <p className="ss-result-note">
+                  This classification is the existing EfficientNetB0 image-model prediction.
+                  Sensor values are included as research inputs but do not alter the prediction.
+                </p>
+                <button type="button" className="ss-secondary" onClick={resetScan}>
+                  <RotateCcw size={16} aria-hidden="true" />
+                  Scan another image
+                </button>
+              </section>
+            ) : (
+              <section className="ss-state-card ss-result-area" aria-live="polite">
+                <span className="ss-state-icon">
+                  {busy ? (
+                    <Loader2 size={23} className="ss-spin" aria-hidden="true" />
+                  ) : (
+                    <ScanLine size={23} aria-hidden="true" />
+                  )}
+                </span>
+                <h3>{busy ? 'Analyzing soil image' : file ? 'Image ready for analysis' : 'Awaiting soil image'}</h3>
+                <p>
+                  {busy
+                    ? 'The image model is processing your upload and the sensor values are being submitted as separate inputs.'
+                    : file
+                      ? 'Your image and IoT measurements are ready. Select Analyze soil to continue.'
+                      : 'Upload a clear soil image to begin analysis.'}
+                </p>
+                {busy && <span className="ss-loading-indicator">Processing image + IoT inputs</span>}
+              </section>
+            )}
 
             {result && (
               <div className="ss-result-status" role="status">
