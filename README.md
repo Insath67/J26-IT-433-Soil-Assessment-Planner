@@ -1,214 +1,248 @@
-SARU BIMA — CROP FINDER
-Image Processing & ML-based Soil Assessment and Crop 
-Recommendation (Sri Lanka) 
+SARU BIMA
+Image Processing and Machine Learning-Based Soil Assessment
+and Crop Recommendation — Sri Lanka
 
-Component Owner: Sasanka Karindra Bandara -
-Compnent : Climate-Aware Machine Learning Based Crop Recommendation  
-Student ID: IT23343252
+Research Focus: Kegalle District
 Documentation Updated: 29 October 2026
 
 Repository:
 https://github.com/Insath67/J26-IT-433-Soil-Assessment-Planner
-Component branch: crop-recommendation-sasanka
 
-DOCUMENTATION SCOPE
+1. PROJECT OVERVIEW
 ===================
-This document describes Crop Finder using the implementation information
-shared by the component owner. It is not an audit of the latest repository.
-Implemented workflows, checks still required and planned extensions are
-identified separately. Listing a feature as planned does not implement it.
+Saru Bima is a collaborative agricultural research platform that brings
+soil classification, soil health assessment, crop recommendation and
+fertilizer guidance into one web application.
 
-1. OVERVIEW
-===========
-Crop Finder is the crop recommendation component of Saru Bima. It combines
-soil nutrient values and environmental inputs to rank candidate crops using
-XGBoost. Tree SHAP explains how the inputs influence individual crop scores.
+The platform is designed to help users understand their soil, explore
+crop options and interpret the factors behind agricultural recommendations.
+It supports a shared English, Sinhala and Tamil interface and light/dark
+presentation themes.
 
-The user interface includes English, Sinhala and Tamil language support,
-light and dark themes, crop photographs and an analysis-report workflow.
+The project uses one React frontend and one FastAPI backend. Each research
+component has its own frontend and backend feature folders. Navigation,
+language settings, themes, API infrastructure and database configuration
+are shared.
 
-Access the component through Home > Crop Finder:
-http://localhost:5173/crop-finder
+This README covers the entire project. Component-specific documentation
+should remain in the corresponding feature folders.
 
-A planned extension will provide continued support after a farmer chooses
-to cultivate a recommended crop. It will offer consent-based SMS alerts for
-relevant weather hazards, pest risks and crop-management advice, together
-with an optional request for agricultural technical officer assistance.
-This extension is not yet documented as implemented.
+Documentation is based on the code and development updates shared by the
+team, not an independent audit of the latest repository. Proposed features
+are explicitly identified. Successful startup is not proof of research
+accuracy, completed integration or production readiness.
 
-2. RESEARCH PROBLEM AND OBJECTIVES
-==================================
-Crop selection depends on both soil and environmental conditions. Farmers
-also need understandable reasons for recommendations and timely support
-when conditions change after planting.
+2. RESEARCH COMPONENTS
+======================
 
-The component investigates:
-- Combining soil and weather variables in crop recommendation.
-- Ranking alternatives rather than providing only one crop label.
-- Explaining recommendations through Tree SHAP.
-- Delivering accessible, multilingual information.
-- Integrating upstream soil information and future field measurements.
-- Extending support from crop selection to post-planting risk communication.
+SOIL SCAN
+Route: /soil-scan
+Frontend: frontend/src/features/soil-scan/
+Backend: backend/app/features/soil_scan/
 
-The post-planting extension is a proposed research direction. Claims of
-novelty and effectiveness require literature comparison and evaluation.
-Regional agronomic suitability requires independent field validation.
+Purpose:
+Classify soil from images and provide soil-type context for the wider system.
 
-3. SHARED APPLICATION ARCHITECTURE
-==================================
-The project has one React frontend and one FastAPI backend, with separate
-feature folders for Soil Scan, Soil Health, Crop Finder and Fertilizer Guide.
-Language selection, navigation, themes and design tokens are shared.
+Known integration:
+The shared backend imports a Soil Scan prediction service using TensorFlow
+and Pillow. These dependencies must be available for shared startup.
 
-Current prediction workflow:
-1. The user enters inputs or loads an available dataset example.
-2. The frontend submits a prediction request.
-3. The backend validates and prepares the inputs.
-4. Live mode retrieves temperature and humidity from OpenWeather.
-5. XGBoost produces class probabilities and crops are ranked.
-6. Tree SHAP calculates feature contributions for the same inputs.
-7. The API returns results, explanations and analysis context.
-8. The frontend displays crop cards and explanations.
+To verify with the component owner:
+- Saved image-classification model and label mapping.
+- Supported image formats, preprocessing and input validation.
+- Actual classification accuracy and held-out test results.
+- How soil-type results are transferred to other components.
 
-The backend loads saved models; it does not retrain on every request.
-Other members maintain the implementation details of their own modules.
+SOIL HEALTH
+Route: /soil-health
+Frontend: frontend/src/features/soil-health/
+Backend: backend/app/features/soil_health/
 
-4. TECHNOLOGIES AND DEPENDENCIES
-================================
-Frontend:
-React, Vite, React Router, react-i18next/i18next, shared CSS/Tailwind design
-tokens, shared UI components and Lucide icons.
+Purpose:
+Assess soil nutrients and fertility using available soil inputs and support
+future ingestion of genuine IoT measurements.
 
-Crop Finder backend:
-Python 3.12, FastAPI, Uvicorn, NumPy, pandas, XGBoost, SHAP, Requests and
-python-dotenv.
+Development shared to date includes:
+- New analysis and analysis-result pages.
+- Soil history and device-status pages.
+- Nutrient-status and fertility assessment logic.
+- Additional ML/soil-type prediction services.
+- MongoDB soil-sample storage code.
+- Report generation and multilingual/theme updates.
 
-Shared storage:
-MongoDB Atlas and PyMongo.
+To verify:
+- Which screens use browser storage versus backend MongoDB records.
+- Which outputs are rule-based and which come from trained models.
+- Measurement units, agronomic thresholds and validation evidence.
+- Whether device status is derived from a real device heartbeat.
+- Complete translations and report rendering across all module pages.
 
-Other shared backend dependencies:
-TensorFlow and Pillow for the Soil Scan integration. These are not the
-Crop Finder prediction model, but their imports can affect shared startup.
+Do not label demonstration readings or an environment-flag status as verified
+live IoT telemetry. Some previously shared recommendations and display values
+were fixed examples; confirm or replace them before presenting live results.
 
-Use versions tested with the team's saved models. Keep dependency files
-updated; installing the latest package alone does not prove compatibility.
+CROP FINDER
+Route: /crop-finder
+Frontend: frontend/src/features/crop-finder/
+Backend: backend/app/features/crop_finder/
+Owner: Sasanka Karindra Bandara — IT23343252
 
-5. IMPORTANT FILES
-===================
-All paths below are relative to the repository root.
+Purpose:
+Combine soil and environmental inputs to rank candidate crops and explain
+the predictions with Tree SHAP.
 
-frontend/src/features/crop-finder/App.jsx
-    Crop dashboard, form and prediction interaction.
-frontend/src/features/crop-finder/App.css
-    Crop Finder layout and styles.
-frontend/src/features/crop-finder/CropExplanation.jsx
-    User-facing explanation panel introduced during UI updates.
-frontend/src/features/crop-finder/translations.js
-    Translation resources where stored as a file; some revisions may use
-    a translations directory instead.
+Development shared to date includes:
+- Manual inputs and available dataset examples.
+- Saved XGBoost model and crop-label mapping.
+- Ranked crop scores and per-crop SHAP explanations.
+- OpenWeather temperature/humidity integration.
+- Crop photographs, detail popup and explanation-panel improvements.
+- Multilingual interface, theme support and report-export updates.
 
-backend/app/features/crop_finder/router.py
-    Crop Finder API endpoints.
-backend/app/features/crop_finder/service.py
-    Model loading, input processing, weather retrieval and explanations.
-backend/app/features/crop_finder/models/crop_xgboost_model.json
-    Trained XGBoost model.
-backend/app/features/crop_finder/models/crop_labels.json
-    Crop labels matching the model's class output order.
-backend/app/features/crop_finder/models/correct_label_encoder.pkl
-    Training label encoder artifact.
-backend/app/features/crop_finder/data/Kegalle_Crop_Dataset.csv
-    Prototype dataset.
-
-Shared files:
-frontend/src/App.jsx                  Application routes
-frontend/src/pages/HomePage.jsx       Homepage
-frontend/src/shared/Navigation.jsx    Navigation and shared controls
-frontend/src/shared/Footer.jsx        Shared footer
-frontend/src/i18n/index.js             Language configuration
-frontend/src/globals.css              Colors, typography and theme tokens
-frontend/src/components/ui/           Shared UI components
-frontend/src/services/api.js          Shared request helper
-frontend/vite.config.js               Development proxy configuration
-backend/app/main.py                   Shared FastAPI entry point
-backend/app/database.py               MongoDB connection/initialization
-backend/requirements.txt              Backend dependencies
-docs/                                Supporting team/research documentation
-
-6. MODEL INPUTS AND INTERPRETATION
-==================================
-The current model expects these seven features in this order:
+Current model features, in order:
 N, P, K, temperature, humidity, ph, rainfall
 
-N, P, K: Soil nutrient values. Their units and measurement methods must be
-verified and consistent between training and inference.
-temperature: Degrees Celsius.
-humidity: Relative humidity percentage.
-ph: Soil pH.
-rainfall: Value using the same time basis as the training data.
+The current seven-feature model does not directly use soil type or EC.
+Including those inputs requires coordinated training, API and model changes.
 
-The service calls model.predict_proba(frame) and ranks candidate crops.
-shap.TreeExplainer(model) explains that same XGBoost model.
+SHAP explains the XGBoost model; it is not a second crop classifier.
+Class probabilities are not guaranteed crop-success or yield percentages.
+The inspected implementation uses SHAP contributions in raw model-margin
+units, not percentage-point changes in probability.
 
-SHAP is an explanation method, not a second crop classifier.
-Scores are uncalibrated model class probabilities unless calibration is
-implemented and evaluated. They are not guaranteed crop-success or yield
-percentages. SHAP values in the inspected implementation use raw model-margin
-units, not percentage-point probability changes.
+FERTILIZER GUIDE
+Route: /fertilizer-guide
+Frontend: frontend/src/features/fertilizer-guide/
+Backend: backend/app/features/fertilizer_guide/
 
-A positive contribution supports that crop's model score; a negative
-contribution reduces it relative to the explanation baseline. Neither is
-proof of agricultural causation or a fertilizer/pesticide prescription.
+Purpose:
+Provide fertilizer guidance using crop and soil information.
 
-Soil type and EC are not direct features of this seven-input model.
-To include them in inference, update the training data, preprocessing,
-feature definition, saved model, validation and API contract together.
+Its route and feature folders form part of the shared application. The latest
+algorithm, model, nutrient rules, dosage calculations and validation status
+must be documented by its owner. This README does not declare them complete.
 
-7. WEATHER MODES
-================
-Manual mode:
-- Accepts soil and environmental values supplied in the request.
-- Supports demonstrations using available dataset examples.
-- An example from a CSV is not a live sensor observation.
+A proposed integration will pass the selected crop and soil/sample context
+from Crop Finder. SHAP contributions must not be converted directly into
+fertilizer dosages.
 
-Live mode:
-- Requests current weather from OpenWeather.
-- Uses the returned temperature and humidity.
-- Keeps soil values and rainfall separately supplied.
-- Requires OPENWEATHER_API_KEY in backend/.env.
+3. SYSTEM WORKFLOW AND INTEGRATION BOUNDARIES
+============================================
+Intended end-to-end workflow:
+1. Collect an image, manual soil data or verified sensor measurements.
+2. Obtain soil classification and nutrient/fertility assessment.
+3. Prepare consistent soil and weather inputs for Crop Finder.
+4. Generate crop rankings and explain the individual recommendations.
+5. Let the user select a crop and request relevant fertilizer guidance.
+6. Store associated sample/analysis records where persistence is implemented.
+7. In a future extension, register actual cultivation and opt in to alerts.
 
-The prototype uses an annual-rainfall assumption. Confirm the dataset's
-actual temporal meaning before introducing field or weather measurements.
-Hourly rainfall must not be substituted for annual rainfall.
+These stages are the intended integrated workflow. Their presence in separate
+modules does not prove that every handoff is automated today.
 
-Current weather and long-term climate summaries are different inputs.
-Evaluate whether their time scales match the intended recommendation task.
-A current-weather request does not provide future hazard or pest forecasts.
+Agree on a shared data contract containing:
+- Sample and field identifiers.
+- Crop identifier and model/label version.
+- Location, observation time and data source.
+- Numeric values and explicit units.
+- Measured versus predicted/estimated status.
+- Missing-value and quality indicators.
+- Soil-type labels and supported categories.
 
-A configured key does not prove that the key is valid. Submit a new analysis
-after changing inputs. The same top crop can remain selected even when its
-score and SHAP factors change.
+Keep machine-readable keys stable across languages. Translate display text,
+not stored identifiers or model class mappings. Never silently fill missing
+field data with example values.
 
-8. OUTPUTS AND INTERFACE
-========================
-The developed workflow includes ranked crops, a highlighted top result,
-model scores, photographs, a crop-detail popup, per-crop explanations,
-input values and warnings where supported by the response.
+4. REPOSITORY ORGANIZATION
+==========================
+The repository root contains frontend/, backend/ and supporting docs/.
+There are not four independent React projects or four virtual environments.
 
-UI updates cover multilingual text, light/dark themes, a centered input
-form, improved explanation summaries and responsive presentation.
+Frontend feature folders:
+frontend/src/features/soil-scan/
+frontend/src/features/soil-health/
+frontend/src/features/crop-finder/
+frontend/src/features/fertilizer-guide/
 
-PDF export functionality has been introduced during frontend updates.
-Verify the current export action: the original version exported JSON.
-If the report uses a browser print dialog, select Save as PDF.
-Check the selected language, Sinhala/Tamil font rendering, page breaks,
-actual inputs and selected crop. Report output requires runtime verification.
+Backend feature folders:
+backend/app/features/soil_scan/
+backend/app/features/soil_health/
+backend/app/features/crop_finder/
+backend/app/features/fertilizer_guide/
 
-9. FIRST-TIME SETUP — WINDOWS
+Shared frontend files:
+frontend/src/App.jsx                  Application routes
+frontend/src/main.jsx                 Frontend initialization
+frontend/src/pages/HomePage.jsx       Homepage
+frontend/src/shared/Navigation.jsx    Navigation and header controls
+frontend/src/shared/Footer.jsx        Shared footer
+frontend/src/shared/modules.js        Module navigation metadata
+frontend/src/shared/workspace.css     Shared layout styles
+frontend/src/globals.css              Theme tokens and typography
+frontend/src/components/ui/           Shared UI components
+frontend/src/i18n/index.js             Shared language configuration
+frontend/src/i18n/locales/            Shared translations
+frontend/src/services/api.js          Shared request helper
+frontend/vite.config.js               Vite and API-proxy configuration
+frontend/package.json                 Frontend scripts/dependencies
+frontend/package-lock.json            Frontend dependency lock file
+
+Shared backend files:
+backend/app/main.py                   FastAPI entry point and routers
+backend/app/database.py               MongoDB connection/initialization
+backend/app/shared/                   Shared infrastructure
+backend/tests/                       Existing backend tests
+backend/requirements.txt              Backend dependencies
+backend/.env                         Private local configuration
+
+Useful Crop Finder artifacts:
+backend/app/features/crop_finder/models/crop_xgboost_model.json
+backend/app/features/crop_finder/models/crop_labels.json
+backend/app/features/crop_finder/models/correct_label_encoder.pkl
+backend/app/features/crop_finder/data/Kegalle_Crop_Dataset.csv
+
+Preserve docs/ for team workflow, design decisions, data provenance and
+validation evidence. Do not delete useful documentation merely to simplify
+the folder view. Feature-specific README files should identify their owner,
+inputs, outputs, dependencies, model artifacts, tests and remaining work.
+
+5. TECHNOLOGY STACK
+===================
+Frontend:
+React, Vite, React Router, i18next/react-i18next, shared CSS/Tailwind styling,
+shared UI components and Lucide icons.
+
+Backend:
+Python 3.12, FastAPI and Uvicorn.
+
+Data and machine learning:
+NumPy, pandas, scikit-learn/joblib where used, XGBoost and SHAP.
+TensorFlow and Pillow are required by the integrated Soil Scan service.
+
+Storage and external services:
+MongoDB Atlas/PyMongo, python-dotenv and OpenWeather/Requests.
+SMS and officer-assignment services are planned, not current dependencies.
+
+Use package versions tested with the team's models. A newer package is not
+necessarily compatible with an existing saved model. All shared dependencies
+must be recorded in the appropriate package/requirements files.
+
+6. FIRST-TIME SETUP — WINDOWS
 =============================
-Open the repository root in VS Code.
-Prerequisites: Git, Python 3.12, Node/npm compatible with package.json,
-MongoDB project access and an OpenWeather key for live mode.
+Prerequisites:
+- Git and access to the repository.
+- Node.js/npm compatible with frontend/package.json.
+- Python 3.12.
+- MongoDB Atlas project/database access.
+- An OpenWeather key if live weather is required.
+
+Clone the repository if it is not already on your computer:
+
+git clone https://github.com/Insath67/J26-IT-433-Soil-Assessment-Planner.git
+cd J26-IT-433-Soil-Assessment-Planner
+
+If already cloned, open the existing repository root in VS Code.
+Do not clone another repository inside a feature folder.
 
 Terminal 1 — Frontend:
 
@@ -219,18 +253,20 @@ npm.cmd run dev
 Open http://localhost:5173 and keep the terminal running.
 npm.cmd avoids the PowerShell npm.ps1 execution-policy issue.
 
-Terminal 2 — Backend, starting at the repository root:
+Terminal 2 — Backend, starting from the repository root:
 
 cd backend
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 
-Create .venv only when it does not exist. Do not copy a virtual environment
-from another computer. Activation is optional when using its Python path.
-Configure .env before starting the API.
+Create the virtual environment only when it does not already exist.
+Do not copy a virtual environment from another PC. Activation is optional
+when commands use the virtual environment's Python executable directly.
 
-10. ENVIRONMENT AND DATABASE CONFIGURATION
-==========================================
+Complete environment configuration before starting the backend.
+
+7. ENVIRONMENT CONFIGURATION
+=============================
 From backend, create/open .env without overwriting an existing file:
 
 if (!(Test-Path .env)) {
@@ -238,77 +274,98 @@ if (!(Test-Path .env)) {
 }
 code .env
 
-Set actual private values:
+Set your actual private values:
 
 MONGODB_URI=YOUR_MONGODB_CONNECTION_STRING
 MONGODB_DB=YOUR_TEAM_DATABASE_NAME
 OPENWEATHER_API_KEY=YOUR_OPENWEATHER_API_KEY
 FRONTEND_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 
-Replace placeholders. Confirm the database name with the team; earlier
-shared code defaulted to soil_assessment_db.
+Replace placeholders. Confirm the database name with the team. Earlier
+shared code used soil_assessment_db when MONGODB_DB was not set.
 
-A missing .env.example does not prevent direct creation of .env.
-Never commit credentials. An .env.example should contain placeholders only.
-Replace exposed credentials and update affected environments privately.
+An absent .env.example does not prevent setup: create .env directly.
+A tracked .env.example should contain placeholders only. Never commit or
+publish real database passwords, API keys or SMS credentials.
 
-MongoDB requirements:
-- Available cluster.
-- Current public IP permitted in the project's IP access list.
-- Valid database-user credentials and required permissions.
-- Network access to the database nodes.
+MongoDB setup requirements:
+- The intended cluster must be available.
+- The current public IP must be permitted in the Atlas access list.
+- Database-user credentials must be valid.
+- The user must have permissions for the application's operations.
 
-The shared application initializes the database at startup. A database
-failure can therefore prevent every module from starting.
-A standalone MongoDB ping succeeded during troubleshooting. This does not
-by itself verify application startup, index creation or data persistence.
-A 20-second server-selection timeout was recommended after a 5-second
-failure; confirm the setting in app/database.py.
+The shared backend initializes MongoDB at startup. A failure may prevent
+all module APIs from starting, even if only one module uses the collection.
 
-11. RUN THE APPLICATION
-========================
+A standalone MongoDB ping succeeded during earlier troubleshooting. Full
+startup, index creation and data read/write access still require verification.
+A 20-second server-selection timeout was recommended after a 5-second timeout;
+confirm the intended configuration in app/database.py.
+
+8. STARTUP AND EVERYDAY USE
+===========================
 From backend:
 
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
-Wait for Application startup complete.
-A preliminary Uvicorn running message followed by a traceback is not a
-successful startup.
+Wait for:
+Application startup complete.
 
-Keep the existing development ports:
+A Uvicorn running message followed by a traceback is not a successful startup.
+Keep both frontend and backend terminals open. Stop a server with Ctrl+C.
+
+Existing development ports:
 Frontend: 5173
 Backend: 8000
 
 Useful addresses:
-http://localhost:5173/
-http://localhost:5173/crop-finder
-http://127.0.0.1:8000/docs
-http://127.0.0.1:8000/api/health
-http://127.0.0.1:8000/api/crop-finder/health
+Homepage:          http://localhost:5173/
+Soil Scan:         http://localhost:5173/soil-scan
+Soil Health:       http://localhost:5173/soil-health
+Crop Finder:       http://localhost:5173/crop-finder
+Fertilizer Guide:  http://localhost:5173/fertilizer-guide
+API documentation: http://127.0.0.1:8000/docs
+Shared API health: http://127.0.0.1:8000/api/health
 
-On subsequent runs, start npm.cmd run dev from frontend and the Uvicorn
-command from backend. Reinstall dependencies when dependency files change.
-Stop either process with Ctrl+C.
+For subsequent runs, use npm.cmd run dev from frontend and the Uvicorn command
+from backend. Reinstall dependencies when dependency files change.
 
-Linux/macOS backend equivalents:
+Linux/macOS equivalents:
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 .venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
-Use npm ci and npm run dev for the frontend.
+Use npm ci and npm run dev in frontend.
 
-12. CROP FINDER API
-===================
+9. API ORGANIZATION
+====================
+backend/app/main.py registers feature routers under /api.
+The running /docs page is the authoritative list for the checked-out code.
+
+Known shared endpoint:
 GET /api/health
-    Shared health endpoint.
-GET /api/crop-finder/health
-    Component health/configuration information.
-GET /api/crop-finder/metadata
-    Input metadata and available examples.
-POST /api/crop-finder/predict
-    Ranked predictions and explanations.
 
-Example manual request body:
+Known Crop Finder endpoints:
+GET  /api/crop-finder/health
+GET  /api/crop-finder/metadata
+POST /api/crop-finder/predict
+
+Known Soil Health endpoints in the shared router:
+GET  /api/soil-health/status
+GET  /api/soil-health/samples
+POST /api/soil-health/samples
+GET  /api/soil-health/samples/latest
+GET  /api/soil-health/samples/{sample_id}
+GET  /api/soil-health/analysis/{sample_id}
+POST /api/soil-health/analysis/{sample_id}
+GET  /api/soil-health/device/status
+GET  /api/soil-health/sensors/latest
+
+Some revisions also expose /soil aliases and additional ML endpoints.
+Check /docs before integrating. Obtain current Soil Scan and Fertilizer Guide
+endpoint contracts from their owners; do not guess prediction route names.
+
+Example Crop Finder manual request:
 {
   "N": 130,
   "P": 25,
@@ -320,292 +377,264 @@ Example manual request body:
   "weather_mode": "manual"
 }
 
-These values are demonstration inputs, not field observations.
-Live mode uses weather_mode: "live" and obtains temperature/humidity in the
-backend. Check the current schema before changing request/response fields.
+These are example inputs, not a field observation or an agronomic prescription.
 
-13. COMPONENT INTEGRATION
-==========================
-Soil Scan:
-Supply classification context. Using soil type as a predictor requires
-retraining; adding a UI field alone does not change the current model.
+10. WEATHER, DATA SOURCES AND STORAGE
+=====================================
+Crop Finder manual mode uses supplied soil and environmental values.
+Live mode obtains temperature and humidity from OpenWeather; rainfall remains
+a separately supplied value. A configured key does not prove service access.
 
-Soil Health:
-Agree on input names, units, sample IDs, timestamps and quality indicators.
-Distinguish measured values from predicted/estimated values. Do not silently
-replace absent readings with demonstration values.
+The prototype uses an annual-rainfall assumption. Confirm the dataset's time
+basis before using field data. Hourly rainfall, annual rainfall and climatic
+averages are not interchangeable. Current weather is not a future forecast.
 
-Fertilizer Guide:
-Agree on a handoff containing selected crop, sample ID, soil values, units,
-timestamp and source information. SHAP contributions are not fertilizer doses.
+The supplied Crop Finder dataset was programmatically generated for prototype
+work. Its generation workflow creates 1,000 examples each for Tea, Rubber,
+Pepper, Cocoa and Vanilla. This must not be presented as measured IoT data or
+as records obtained from an authority without supporting evidence.
 
-IoT:
-End-to-end real sensor integration remains pending confirmation. Check device
-identity, data freshness, calibration context and missing/out-of-range values.
+Document provenance independently for each module's dataset. Do not assume
+all four modules have the same data source or validation status.
 
-Storage:
-Shared MongoDB connectivity does not prove that Crop Finder analyses are
-saved. Verify persistence, retrieval and sample linking independently.
+The shared MongoDB code uses a soil_samples collection and creates indexes
+for sampleId and timestamp. Audit frontend history/storage helpers as well:
+browser localStorage is local to the browser and is not a shared database.
 
-14. PLANNED EXTENSION — CROP ALERTS AND OFFICER SUPPORT
-======================================================
-Status: Proposed; not yet implemented or validated.
+MongoDB connectivity alone does not prove that all analysis types, reports,
+images or crop recommendations are persisted. Each owner must document the
+implemented write/read workflow and retention requirements.
+
+11. SHARED LANGUAGES, THEMES AND DESIGN
+======================================
+Supported interface languages:
+English, Sinhala and Tamil.
+
+Use the shared i18n instance initialized in frontend/src/i18n/index.js.
+Place common labels in shared locale files and component-specific labels in
+module translation resources. Use translation keys in pages, forms, validation,
+buttons, status messages, popups and reports rather than hardcoded text.
+
+Keep the same language selection across modules. Unknown user-entered names
+or external records are not automatically translated by interface resources.
+
+The shared theme control applies the selected light/dark theme at the document
+root. Reuse it instead of creating separate unsynchronized module toggles.
+Use shared color and foreground tokens from frontend/src/globals.css.
+
+Coordinate edits to Navigation, Footer, App routes and shared design tokens.
+Scope component CSS to prevent styles leaking into other modules. Ensure
+sidebars remain within their module layout and do not overlap the shared footer.
+
+Verify Sinhala/Tamil fonts, long text wrapping, keyboard access, mobile views
+and contrast in both themes. Verify PDF output separately from on-screen text.
+
+12. PLANNED CROP ALERTS AND OPTIONAL OFFICER SUPPORT
+===================================================
+Status: Proposed extension owned by the Crop Finder component; not yet
+implemented or validated as an operational service.
 
 Purpose:
-Support farmers after they choose to cultivate a recommended crop by
-providing relevant SMS alerts and optional agricultural officer assistance.
+Support farmers who choose to cultivate a recommended crop with relevant
+SMS warnings, reviewed cultivation/treatment advice and optional access to
+an agricultural technical officer.
 
-Proposed farmer journey:
-1. Review the crop recommendation and choose the crop actually being planted.
-2. Register a cultivation record with field location, planting date and crop
-   stage where known. Keep this distinct from the recommendation itself.
-3. Opt in to SMS notifications using a verified phone number and preferred
-   language. Allow later changes and opt-out.
-4. Receive relevant alerts when verified weather/bulletin/risk information
-   meets the agreed rules for that crop, location and growth stage.
-5. Read practical prevention, inspection or management advice.
-6. Optionally request agricultural technical officer support.
-7. Receive assignment/appointment updates after an available officer accepts.
-8. Record follow-up observations and case resolution where appropriate.
+Proposed workflow:
+1. Register the crop actually planted, field location and planting date/stage.
+2. Obtain explicit SMS consent and verify the farmer's phone number.
+3. Store the preferred language and notification preferences.
+4. Evaluate applicable forecasts, official bulletins and verified observations.
+5. Send relevant crop/location/stage-specific alerts with source and validity.
+6. Offer an optional request for agricultural technical officer assistance.
+7. Assign an available participating officer after acceptance and notify the
+   farmer; keep requests pending when no officer is available.
+8. Record follow-up and resolution with appropriate access controls.
 
-Proposed alert categories:
-- Heavy rainfall, flooding or waterlogging risks.
-- Dry conditions, drought or heat-related crop stress.
-- Strong winds or other relevant severe-weather hazards.
-- Crop-specific pest and disease advisories.
-- Preventive field inspection and crop-management reminders.
+Possible alerts include heavy rainfall, flooding/waterlogging, dry conditions,
+heat, wind damage and crop-specific pest or disease advisories.
 
-Alert sources and evidence:
-- Use an appropriate forecast/warning service for future weather risks.
-- Use relevant agricultural bulletins and verified observations for pest
-  advisories; weather alone does not confirm an infestation.
-- Separate official warnings, rule-based risk estimates and farmer reports.
-- Include the source, issue time, applicable area and validity period.
-- The existing XGBoost classifier does not predict disasters, pests or disease.
-- Any new risk model must be trained and validated separately. Initial rules
-  require documented sources and review by a qualified agricultural officer.
+The existing crop classifier does not predict disasters or pest outbreaks.
+A separate, documented risk/advisory process is required. Weather alone does
+not confirm an infestation. Distinguish official warnings, estimated risks
+and farmer-reported damage.
 
-Treatment and cultivation guidance:
-- Provide crop-specific inspection, prevention and management steps.
-- Prioritize approved integrated pest-management guidance where applicable.
-- Chemical/product advice must come from reviewed, current local guidance
-  and relevant product labels, not from crop scores or generated guesses.
-- Include necessary restrictions, application precautions and harvest-related
-  guidance when recommending a treatment.
-- Do not send an unverified pesticide name or dose automatically.
-- Where the cause of damage is uncertain, request officer assessment.
+Cultivation and treatment guidance should use current reviewed agricultural
+sources. Product/dosage guidance must be checked against applicable local
+recommendations and product labels by a qualified reviewer. Do not generate
+unverified chemical dosages from crop scores or SHAP values.
 
-Optional officer assistance:
-- Let the farmer explicitly request support; do not assign an officer merely
-  because a crop was recommended or an alert was sent.
-- Match requests by service area, expertise and availability.
-- Confirm participation/access arrangements with the relevant officers or
-  institution before promising a service.
-- Track requested, pending, accepted/assigned, in-progress and closed states.
-- Show a pending state when no officer is available.
-- Share only necessary farmer/contact/field information with consent.
-- Do not claim affiliation with an agricultural authority until established.
+Officer support is optional. Obtain farmer consent before sharing contact or
+field details. Establish officer participation and institutional arrangements
+before promising assignments or claiming an official partnership.
 
-Proposed implementation areas:
-- Farmer identity and phone verification.
-- Cultivation registration and crop-stage updates.
-- Consent and notification preferences.
-- Forecast/bulletin ingestion and a scheduled risk-evaluation worker.
-- Reviewed advisory content and language templates.
-- SMS-provider integration and delivery-status callbacks.
-- Duplicate-alert suppression, bounded retries and expiry handling.
-- Officer profiles, support requests and assignment management.
-- Role-based access and audit records.
+Implementation work includes cultivation records, consent/opt-out, reviewed
+multilingual advisory content, a scheduled worker, SMS delivery tracking,
+duplicate suppression, expiry/retry rules, officer roles and case management.
 
-Suggested future code organization (not existing files):
-backend/app/features/crop_finder/cultivation/
-backend/app/features/crop_finder/alerts/
-backend/app/features/crop_finder/officer_support/
-frontend/src/features/crop-finder/pages/MyCultivations.jsx
-frontend/src/features/crop-finder/pages/Alerts.jsx
-frontend/src/features/crop-finder/pages/OfficerSupport.jsx
+Evaluate risk accuracy, false/missed alerts, lead time, advice correctness,
+SMS delivery latency, language comprehension and officer response times.
+A delivered SMS does not prove that the user read it.
 
-Suggested future MongoDB collections (not confirmed as created):
-- cultivations
-- notification_preferences
-- crop_advisories
-- alert_events
-- sms_deliveries
-- officer_profiles
-- officer_support_requests
-
-Keep SMS provider credentials on the backend. Select a provider and document
-its actual configuration variables before adding them to the setup process.
-Test Sinhala/Tamil SMS rendering, message segmentation and delivery costs.
-A delivery acknowledgement does not prove that a farmer read the message.
-
-Future validation:
-- Relevance of alerts to crop, stage, location and time.
-- Risk-rule/model performance against independent recorded events.
-- False alarms, missed events and warning lead time.
-- Expert correctness of treatment/cultivation guidance.
-- SMS delivery latency, duplicates, failures and opt-out handling.
-- Officer acceptance time and support-request completion.
-- User comprehension across all three languages.
-
-15. DATASET AND MODEL VALIDATION STATUS
-========================================
-The supplied dataset was programmatically generated for prototype work.
-The generation workflow creates 1,000 examples for each of Tea, Rubber,
-Pepper, Cocoa and Vanilla.
-
-Do not describe these records as actual IoT observations or as data obtained
-from an agricultural authority without evidence. Document and validate the
-crop ranges and label-generation assumptions.
-
-The notebook uses an 80/20 split with random_state=42. Preserve the exact
-dataset and split associated with the model. Review notebook execution order:
-regenerating the CSV after training breaks provenance unless tracked.
-
-No measured accuracy percentage is claimed in this README.
-Synthetic-data performance does not establish field accuracy.
-
-Evaluation should include accuracy, macro precision/recall/F1, per-class
-metrics, a confusion matrix and top-3 accuracy where appropriate. Prevent
-training/test leakage and retain reproducible evaluation records.
-
-SHAP is assessed for explanation correctness/consistency, not as a separate
-classifier. Recommendation, hazard detection and SMS delivery require
-separate evaluation; there is no single meaningful accuracy for all of them.
-
-16. CHECKS AND DEMONSTRATION
-============================
-Frontend:
+13. VALIDATION AND RESEARCH EVIDENCE
+===================================
+Frontend, from frontend:
 npm.cmd run lint
 npm.cmd run build
 
-Backend:
+Backend, from backend:
 .\.venv\Scripts\python.exe -m pip check
 
 If the repository retains its unittest-based suite:
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 
-Confirm that tests were discovered and executed. Zero tests is not coverage.
+Confirm tests were discovered and executed. Zero discovered tests is not
+successful coverage. Run checks relevant to changes in shared functionality.
 
-Manual demonstration:
-1. Start both servers and open Crop Finder.
-2. Load an example or enter valid inputs.
-3. Submit a manual analysis and inspect crops and explanations.
-4. Test live mode and confirm the actual returned temperature/humidity.
-5. Confirm invalid-input and weather-service errors are understandable.
-6. Check all crop photographs and the detail popup.
-7. Check languages, themes, mobile layout and keyboard navigation.
-8. Export the report and verify language, values and page layout.
-9. Verify that sidebars remain above, rather than overlap, the shared footer.
+End-to-end checks:
+- Backend completes startup and required model artifacts load.
+- Every navigation route opens and direct route loading works.
+- Invalid/missing input produces understandable errors.
+- Results correspond to the submitted sample and values.
+- Database records can be created and retrieved where implemented.
+- Upstream/downstream identifiers and units remain consistent.
+- External-service failures are handled clearly.
+- Languages, themes, images, popups and reports work across modules.
+- No demonstration value is incorrectly labeled as measured live data.
 
-Planned SMS/officer features must not appear in a demo as live services
-before their integrations and permissions are in place.
+Model evaluation:
+Each component owner must provide dataset provenance, split strategy,
+preprocessing, metrics and limitations appropriate to the model/task.
+For classifiers, report per-class performance and a confusion matrix in
+addition to accuracy and macro precision/recall/F1. For numeric predictions,
+use appropriate regression metrics and report units.
 
-17. REMAINING WORK AND PRIORITIES
-================================
-Runtime:
-- Record compatible package versions and verify shared startup.
-- Maintain placeholder environment templates.
-- Confirm database indexes, permissions and persistence.
+Avoid training/test leakage. Keep original test partitions and model/data
+versions. Synthetic-data performance does not establish real field accuracy.
+For Crop Finder, evaluate top-3 performance where useful and compare a Random
+Forest baseline. Spatial block validation requires genuine location groups.
+SHAP is an explanation method, not another classifier accuracy result.
 
-Integration:
-- Finalize Soil Health input and Fertilizer Guide output contracts.
-- Integrate genuine IoT data when available.
-- Record source, time, units and model version for analyses.
+No project-wide accuracy percentage or completed field validation is claimed
+by this README. Prediction quality, interface behavior and delivery reliability
+must be evaluated separately.
 
-Research:
-- Verify data sources and agronomic assumptions.
-- Evaluate against representative independent field data.
-- Compare XGBoost with a Random Forest baseline.
-- Use spatial block cross-validation when genuine location groups exist.
-- Evaluate weather time scales and model sensitivity.
-- Assess calibration before interpreting probabilities as confidence.
+14. REMAINING PROJECT WORK
+==========================
+- Confirm complete startup and compatible dependency versions for all modules.
+- Finalize shared sample IDs, units, soil labels and handoff schemas.
+- Connect real IoT ingestion and trustworthy device heartbeat reporting.
+- Verify Soil Scan classification transfer and Soil Health input provenance.
+- Complete/verify Crop Finder to Fertilizer Guide integration.
+- Reconcile browser history with shared database persistence.
+- Verify translations, reports, responsive layout and theme coverage.
+- Document sources for thresholds, generated labels and recommendation rules.
+- Validate models on representative independent data.
+- Evaluate seasonal timing/yield-class features before claiming implementation.
+- Implement and pilot the planned SMS/officer workflow separately.
+- Add identity, role-based permissions and privacy controls before introducing
+  real farmer contact records and officer assignments.
 
-User experience:
-- Verify complete translations, PDF output and dark-theme contrast.
-- Clearly distinguish measured, estimated, example and stale inputs.
-- Improve empty, loading and failure states.
+This list is a development roadmap, not a statement that every listed item
+has already been implemented.
 
-Post-planting support:
-- Implement cultivation registration and SMS consent first.
-- Establish advisory sources and officer review/participation arrangements.
-- Add risk alerts, multilingual SMS and optional officer requests.
-- Pilot the workflow and evaluate it separately from crop prediction.
+15. TEAM COLLABORATION AND GIT
+==============================
+Use the shared repository and each member's assigned branch. Confirm branch
+names with the team. The known Crop Finder branch is:
+crop-recommendation-sasanka
 
-Seasonal planting timing and expected yield classes remain planned unless
-implementation and validation evidence is available. Do not infer these
-outputs from the current crop classifier.
+Each member primarily owns their feature folders. Coordinate edits to:
+- Application routes and shared API contracts.
+- Main backend router registration and database configuration.
+- Dependency manifests and lock files.
+- Shared styles, translations, navigation and footer.
 
-18. SHARED DESIGN AND TEAM WORKFLOW
-===================================
-Use frontend/src/globals.css for shared colors and typography. Reuse shared
-UI components and foreground/background theme tokens. Keep module CSS scoped.
-Use the shared i18n instance and header controls rather than independent
-language/theme state in each module.
+Before updating a branch, commit or safely preserve unfinished local work.
+Fetch main, review incoming changes and resolve conflicts deliberately.
+Do not blindly accept one side of a conflict in shared dependency files.
 
-The shared repository contains frontend and backend. Do not nest additional
-Git repositories inside feature folders. Coordinate changes to shared routes,
-dependencies, schemas, themes and navigation.
+Commit related changes with clear messages, push the feature branch and open
+a pull request to main. Use required review/check gates. Use a merge commit
+when preserving individual commits is the team's agreed workflow and allowed
+by repository rules. Do not rewrite shared history to fabricate progress.
 
-Work on crop-recommendation-sasanka, review changes, run relevant checks,
-commit related work clearly, push and open a pull request targeting main.
-Use a merge commit when team/repository rules require preserving individual
-commits. Other members must pull or merge updates into their local branches.
+After a merge, other members must pull or merge the updated main into their
+own local workflow; pushing does not automatically change their computers.
 
-After dependency changes:
+After dependency updates:
 Frontend: npm.cmd ci
 Backend: .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 
-Track package.json, package-lock.json and requirements.txt.
-Exclude .env, .venv/, node_modules/, dist/, __pycache__/, *.pyc and temporary
-exports/logs containing private data. Keep useful docs/ content updated.
+Track package.json, package-lock.json, requirements.txt, code and useful docs.
+Exclude .env/private settings, .venv/, node_modules/, dist/, __pycache__/, *.pyc,
+local logs and private temporary reports. Keep placeholders in .env.example.
 
-19. TROUBLESHOOTING
+16. TROUBLESHOOTING
 ===================
+Blank frontend:
+Read the browser console and Vite terminal. Check imports, JSX and JSON for
+errors or unresolved merge markers. Run commands from frontend.
+
+Vite connection lost:
+Restart npm.cmd run dev and keep the terminal open.
+
+ECONNREFUSED 127.0.0.1:8000:
+The proxy cannot reach FastAPI. Confirm backend startup completed on 8000.
+
+Python executable not found:
+Create .venv inside backend and run its executable from that directory.
+
+No module named tensorflow:
+Install the team's tested TensorFlow version in backend/.venv and record it
+in requirements.txt.
+
+No module named PIL:
+Install Pillow, the package providing PIL, and record it in requirements.txt.
+
+oneDNN informational messages:
+These alone do not indicate failure. Read the final traceback exception.
+
+MongoDB timeout:
+Check cluster state, public-IP access, network reachability and configuration.
+TCP success does not prove authentication; ping success does not prove every
+application operation is permitted. Inspect any subsequent startup error.
+
 Missing .env.example:
 Create .env directly without overwriting existing values.
 
-No module named tensorflow / PIL:
-Install the team's compatible TensorFlow / Pillow package in backend/.venv
-and update requirements.txt. PIL is imported from the Pillow package.
-
-oneDNN messages:
-Informational messages alone do not indicate a crash. Read the final exception.
-
-MongoDB timeout:
-Check cluster state, IP access rules, network access and timeout settings.
-A successful TCP test does not verify authentication or database permissions.
-A successful ping does not prove index creation or application persistence.
-
-ECONNREFUSED 127.0.0.1:8000:
-Confirm backend startup completed on port 8000.
-
-Vite server connection lost:
-Restart the frontend and keep its terminal running.
+OpenWeather 401:
+Check the actual key and account access. A populated variable is insufficient.
 
 Unknown cCropExplanation DOM prop:
-Render CropExplanation as a JSX component rather than an HTML attribute.
+Render CropExplanation as a JSX component, not an HTML attribute.
 
-OpenWeather 401:
-Check key validity and account access; configuration presence is insufficient.
+Sidebar overlaps footer or dark-mode text disappears:
+Review component-scoped layout rules and foreground/background theme tokens.
 
-Invalid package.json/package-lock.json:
-Resolve all merge markers while retaining required dependencies across modules.
+Application Control blocks a DLL:
+Use an administrator-approved Python/package environment. A new virtual
+environment does not necessarily resolve a Windows security policy block.
 
-Windows Application Control blocks a DLL:
-Use an administrator-approved environment; recreating .venv may not fix policy.
+Port in use:
+Identify and stop the older project server before restarting. Keep the
+frontend/backend ports and proxy target consistent.
 
-20. DEPLOYMENT AND RESEARCH LIMITS
+17. DEPLOYMENT AND RESPONSIBLE USE
 ==================================
-Vite's development proxy is not included in a static production build.
-Configure SPA fallback to index.html and route /api to FastAPI. For separate
-origins, use the configuration expected by the current API helper and CORS.
-Use HTTPS, hosting secrets and a production server configuration without
---reload. Include required model artifacts.
+Vite's development proxy is not included in static hosting. Build the frontend,
+configure SPA fallback to index.html and route /api to the backend. For separate
+origins, follow the actual API helper's configuration and backend CORS settings.
 
-For future SMS/background jobs, use persistent scheduling/delivery tracking
-so restarts and multiple API workers do not produce lost or duplicate alerts.
+Use HTTPS, platform secret storage, appropriate logging and required model
+artifacts. Do not run production Uvicorn with --reload. Plan database backups
+and access controls. Do not put secret API keys into frontend build variables.
 
-Crop Finder remains a research prototype. Independent field validation and
-appropriate agronomic review are required before treating recommendations
-or future advisories as operational farming guidance.
+Future SMS jobs need persistent scheduling/delivery records so restarts or
+multiple API workers do not lose or duplicate alerts. Test costs, Unicode
+message segmentation, consent and opt-out before real farmer deployment.
+
+Saru Bima is a research prototype. Recommendations depend on input quality,
+data provenance and validation. Independent field validation and qualified
+agronomic review are needed before treating outputs as operational farming
+advice. The availability of an API, a model score or a polished dashboard is
+not evidence of completed scientific validation.
