@@ -2,7 +2,7 @@ SARU BIMA — CROP FINDER
 Image Processing & ML-based Soil Assessment and Crop 
 Recommendation (Sri Lanka) 
 
-Component Owner: Sasanka Karindra Bandara
+Component Owner: Sasanka Karindra Bandara -
 Compnent : Climate-Aware Machine Learning Based Crop Recommendation  
 Student ID: IT23343252
 Documentation Updated: 29 October 2026
